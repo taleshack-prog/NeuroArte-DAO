@@ -41,6 +41,15 @@
 - **Registro on-chain (Base L2):**  
   Tx: `0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b`  
   Explorer: https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b
+### 🔏 Verificação técnica
+
+| Tipo | Valor |
+|------|--------|
+| **SHA256** | `73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594` |
+| **CID IPFS** | `bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e6415fccvsq` |
+| **Transação Base L2** | [`0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b`](https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b) |
+| **Autor(es)** | Tales Hack; Prof. Alexandre de Souza Fortis |
+| **Data de registro** | 2025-10-18 |
 
 **Verificação rápida (local)**
 ```bash
