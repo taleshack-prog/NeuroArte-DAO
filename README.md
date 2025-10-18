@@ -48,3 +48,48 @@ wget https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6
 shasum -a 256 NeuroArte_Whitepaper_Final_EN.docx
 # Saída esperada:
 # 73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594
+# 🧠 NeuroArte DAO  
+**Research, Art & Decentralized Science for Neurodivergent Minds**
+
+A DAO dedicated to research, art, and open science for neurodivergent cognition — bridging neuroscience, creativity, and decentralized governance.  
+Our mission: fund and coordinate transparent, reproducible, and inclusive research for ADHD, Autism, and Giftedness through decentralized science (DeSci) infrastructure.
+
+---
+
+## 🌍 Vision
+
+- Promote **neurodiversity as a driver of innovation**.  
+- Enable **open, reproducible and transparent science**.  
+- Support **creative and cognitive equity** through blockchain-based funding and attribution.  
+- Foster **DeSci collaborations** linking artists, scientists, and DAOs.
+
+---
+
+## 🧬 Core Principles
+
+1. **Open Methods** — All research protocols and datasets are published openly (PRISMA, RoB-2, GRADE).  
+2. **Reproducibility** — Each document has verifiable IPFS + blockchain hashes.  
+3. **Ethics & Inclusion** — Governance respects neurodivergent autonomy and scientific neutrality.  
+4. **Transparent Funding** — DAO treasury and grants are auditable on-chain.  
+
+---
+
+## 🔗 Verificação do Whitepaper
+
+**NeuroArte DAO — Whitepaper (Final EN)**  
+- **Versão:** Final 2025-10  
+- **Autores:** Tales Hack; Prof. Alexandre de Souza Fortis
+
+**Provas públicas**
+- **IPFS (DOCX):** `bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq`  
+  — [Abrir no Pinata Gateway](https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq)
+- **SHA-256:** `73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594`
+- **Registro on-chain (Base L2):**  
+  Tx: `0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b`  
+  [Ver na BaseScan](https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b)
+
+**Verificação local**
+```bash
+wget https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq -O NeuroArte_Whitepaper_Final_EN.docx
+shasum -a 256 NeuroArte_Whitepaper_Final_EN.docx
+# Esperado: 73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594
