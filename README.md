@@ -1,4 +1,6 @@
 # 🌀 NeuroArte DAO — Arte, Ciência e Consciência Descentralizada
+[![Verified On-Chain (Base)](https://img.shields.io/badge/Verified%20On--Chain-Base%20L2-brightgreen?style=for-the-badge&logo=ethereum)](https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b)
+[![DeSci Project](https://img.shields.io/badge/DeSci%20Project-IPFS%20Linked-blue?style=for-the-badge&logo=ipfs)](https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e6415fccvsq)
 
 **Status:** Fundação (2025)  
 **Rede:** Base (Ethereum L2)  
