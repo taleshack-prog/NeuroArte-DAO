@@ -1,0 +1,26 @@
+{
+  "document": "NeuroArte DAO Whitepaper (Final EN)",
+  "version": "Final 2025-10",
+  "authors": [
+    "Tales Hack",
+    "Prof. Alexandre de Souza Fortis"
+  ],
+  "timestamp_utc": "2025-10-18 20:44:47 UTC",
+  "network": "Base Mainnet (Ethereum L2)",
+  "ipfs": {
+    "docx_cid": "bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq",
+    "gateway_url": "https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq"
+  },
+  "sha256": "73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594",
+  "blockchain": {
+    "chain": "base",
+    "tx_hash": "0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b",
+    "block": 37015470,
+    "explorer": "https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b"
+  },
+  "ens_text_suggested": {
+    "whitepaper-sha256": "73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594",
+    "whitepaper-ipfs-docx": "ipfs://bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq",
+    "whitepaper-chainanchor": "base:0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b"
+  }
+}
