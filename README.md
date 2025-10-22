@@ -11,6 +11,11 @@
 
 ## 🧾 Whitepaper (Fundador)
 - Documento técnico e político (vFinal): `papers/NeuroArte_DAO_Whitepaper_vFinal_2025_COMPLETO.docx` (hash/IPFS será adicionado após registro).
+## 📦 Infraestrutura On-Chain
+
+- ✅ Registro ENS: [`registro_ens_neuroarte_v1.json`](infra/onchain/registro_ens_neuroarte_v1.json)
+- 🔗 Ver no ENS: [neuroarte.eth](https://app.ens.domains/name/neuroarte.eth)
+- 🔍 Ver no Etherscan: [tx 0x17bd...132a](https://etherscan.io/tx/0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a)
 
 ## ⚖️ Governança & Ética
 - Cláusula de Neutralidade Partidária e Liberdade Ideológica.  
