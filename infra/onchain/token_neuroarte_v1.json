@@ -1,0 +1,23 @@
+{
+    "token_name": "NeuroArte Token",
+    "token_symbol": "NEURO",
+    "token_type": "ERC20",
+    "network": "Base (Ethereum L2)",
+    "total_supply": 10000000,
+    "decimals": 18,
+    "deflationary_policy": "1% burned per transaction",
+    "distribution_plan": {
+        "treasury": 40,
+        "founders": 30,
+        "artists_curators": 20,
+        "initial_liquidity": 10
+    },
+    "vesting_schedule": {
+        "founders": "24 months linear vesting"
+    },
+    "wallet_deployer": "0xE9eFC721405e1026B1ee91C07B2534e1796632A4",
+    "associated_ens": "neuroarte.eth",
+    "linked_whitepaper_cid": "bafybeib5cy7smd43ephhqkozjcjmy4e70mzqnfdysei3vszghdc56kwca",
+    "status": "specification complete, ready for deploy",
+    "signed_by": "Tales Hack | Fundador"
+}
