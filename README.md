@@ -16,6 +16,7 @@
 - ✅ Registro ENS: [`registro_ens_neuroarte_v1.json`](infra/onchain/registro_ens_neuroarte_v1.json)
 - 🔗 Ver no ENS: [neuroarte.eth](https://app.ens.domains/name/neuroarte.eth)
 - 🔍 Ver no Etherscan: [tx 0x17bd...132a](https://etherscan.io/tx/0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a)
+- 🪙 Especificação do token NEURO: [token_neuroarte_v1.json](infra/onchain/token_neuroarte_v1.json)
 
 ## ⚖️ Governança & Ética
 - Cláusula de Neutralidade Partidária e Liberdade Ideológica.  
