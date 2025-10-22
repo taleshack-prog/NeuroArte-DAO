@@ -1,0 +1,13 @@
+{
+  "dominio": "neuroarte.eth",
+  "wallet_owner": "0xE9eFC721405e1026B1ee91C07B2534e1796632A4",
+  "data_registro": "2025-10-21",
+  "expira_em": "2026-10-21",
+  "tx_hash": "0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a",
+  "whitepaper_ipfs_cid": "bafybeib5yc7smd43ehpahkqozjjcmy4e7omzqnfdys2iv3szghdc56kwca",
+  "assinatura_dao": "Tales Hack | Fundador",
+  "auditavel_em": [
+    "https://etherscan.io/tx/0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a",
+    "https://app.ens.domains/name/neuroarte.eth"
+  ]
+}
