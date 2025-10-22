@@ -17,6 +17,16 @@
 - 🔗 Ver no ENS: [neuroarte.eth](https://app.ens.domains/name/neuroarte.eth)
 - 🔍 Ver no Etherscan: [tx 0x17bd...132a](https://etherscan.io/tx/0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a)
 - 🪙 Especificação do token NEURO: [token_neuroarte_v1.json](infra/onchain/token_neuroarte_v1.json)
+#### 🧾 Registro ENS Completo (IPFS + Metadados)
+
+> Backup on-chain da identidade da NeuroArte DAO (IPFS, ENS e GitHub).
+
+🌐 ENS: `neuroarte.eth`  
+📄 Whitepaper IPFS: [`bafkreidtx5gvws...`](https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsac2qaym4roaew1retv56a49bosp7n63e415cvsyccsvq)  
+🪙 Token Spec IPFS: [`bafkreih7jzoou...`](https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga)  
+🔗 GitHub: [`NeuroArte-DAO`](https://github.com/taleshack-prog/NeuroArte-DAO)  
+📬 Contato: `neuroartdao@proton.me`  
+🗓️ Registro válido até: Outubro 21, 2026  
 
 ## ⚖️ Governança & Ética
 - Cláusula de Neutralidade Partidária e Liberdade Ideológica.  
