@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://taleshack-prog.github.io/NeuroArte-DAO/sitemap.xml
