@@ -12,50 +12,111 @@
   <meta property="og:url" content="https://neuroarte.eth.link" />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script>
+    function toggleLanguage(lang) {
+      document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? 'block' : 'none';
+      });
+    }
+  </script>
 </head>
 <body class="bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans">
   <header class="p-6 flex justify-between items-center border-b border-gray-700">
     <h1 class="text-2xl font-bold">🧠 NeuroArte DAO</h1>
-    <a href="https://app.ens.domains/neuroarte.eth" target="_blank" class="bg-purple-700 hover:bg-purple-600 px-4 py-2 rounded-xl transition">Ver ENS</a>
+    <div>
+      <button onclick="toggleLanguage('pt')" class="px-2 py-1 mx-1 bg-purple-600 rounded">PT</button>
+      <button onclick="toggleLanguage('en')" class="px-2 py-1 mx-1 bg-purple-600 rounded">EN</button>
+    </div>
   </header>
 
   <main class="p-10 max-w-4xl mx-auto">
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold mb-2">Arte, Ciência e Descentralização</h2>
-      <p class="text-gray-300 leading-relaxed">
-        DAO global que valoriza artistas aliados à neurodiversidade e financia pesquisa aberta com ética e transparência on-chain.
-      </p>
-    </section>
+    <!-- Conteúdo em Português -->
+    <div data-lang="pt">
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-2">Arte, Ciência e Descentralização</h2>
+        <p class="text-gray-300 leading-relaxed">
+          DAO global que valoriza artistas aliados à neurodiversidade e financia pesquisa aberta com ética e transparência on-chain.
+        </p>
+      </section>
 
-    <section class="mb-12">
-      <h3 class="text-lg font-semibold mb-4">📄 Documentação</h3>
-      <ul class="space-y-2">
-        <li>
-          📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a>
-        </li>
-        <li>
-          🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a>
-        </li>
-        <li>
-          📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">Repositório GitHub</a>
-        </li>
-      </ul>
-    </section>
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">📄 Documentação</h3>
+        <ul class="space-y-2">
+          <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
+          <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
+          <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">Repositório GitHub</a></li>
+        </ul>
+      </section>
 
-    <section class="mb-12">
-      <h3 class="text-lg font-semibold mb-4">📡 Identidade On-Chain</h3>
-      <ul class="space-y-2 text-sm">
-        <li><strong>ENS:</strong> neuroarte.eth</li>
-        <li><strong>Endereço:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
-        <li><strong>Validade:</strong> Outubro 21, 2026</li>
-        <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
-      </ul>
-    </section>
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">📡 Identidade On-Chain</h3>
+        <ul class="space-y-2 text-sm">
+          <li><strong>ENS:</strong> neuroarte.eth</li>
+          <li><strong>Endereço:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
+          <li><strong>Validade:</strong> Outubro 21, 2026</li>
+          <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
+        </ul>
+      </section>
 
-    <section>
-      <h3 class="text-lg font-semibold mb-4">🔐 Transparência</h3>
-      <p class="text-gray-400">A DAO divulgará todas as transações, decisões e gastos após o deploy inicial.</p>
-    </section>
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">✉️ Fale Conosco</h3>
+        <form action="mailto:neuroartdao@proton.me" method="post" enctype="text/plain" class="space-y-4">
+          <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Seu nome" required />
+          <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Seu email" required />
+          <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Mensagem" required></textarea>
+          <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Enviar</button>
+        </form>
+      </section>
+
+      <section>
+        <h3 class="text-lg font-semibold mb-4">🔐 Transparência</h3>
+        <p class="text-gray-400">A DAO divulgará todas as transações, decisões e gastos após o deploy inicial.</p>
+      </section>
+    </div>
+
+    <!-- English Version -->
+    <div data-lang="en" style="display:none">
+      <section class="mb-12">
+        <h2 class="text-xl font-semibold mb-2">Art, Science & Decentralization</h2>
+        <p class="text-gray-300 leading-relaxed">
+          A global DAO that empowers artists aligned with neurodiversity and funds open research with ethics and on-chain transparency.
+        </p>
+      </section>
+
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">📄 Documentation</h3>
+        <ul class="space-y-2">
+          <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
+          <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
+          <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">GitHub Repository</a></li>
+        </ul>
+      </section>
+
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">📡 On-Chain Identity</h3>
+        <ul class="space-y-2 text-sm">
+          <li><strong>ENS:</strong> neuroarte.eth</li>
+          <li><strong>Address:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
+          <li><strong>Valid Until:</strong> October 21, 2026</li>
+          <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
+        </ul>
+      </section>
+
+      <section class="mb-12">
+        <h3 class="text-lg font-semibold mb-4">✉️ Contact</h3>
+        <form action="mailto:neuroartdao@proton.me" method="post" enctype="text/plain" class="space-y-4">
+          <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Your name" required />
+          <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Your email" required />
+          <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Message" required></textarea>
+          <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Send</button>
+        </form>
+      </section>
+
+      <section>
+        <h3 class="text-lg font-semibold mb-4">🔐 Transparency</h3>
+        <p class="text-gray-400">The DAO will disclose all transactions, decisions, and expenses after the initial deploy.</p>
+      </section>
+    </div>
   </main>
 
   <footer class="p-6 text-center text-xs text-gray-600 border-t border-gray-700">
