@@ -122,3 +122,5 @@ Our mission: fund and coordinate transparent, reproducible, and inclusive resear
 wget https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq -O NeuroArte_Whitepaper_Final_EN.docx
 shasum -a 256 NeuroArte_Whitepaper_Final_EN.docx
 # Esperado: 73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594
+
+[![Publicado na DeSci](https://img.shields.io/badge/Publicado%20na%20DeSci-DPID%20%23746-blueviolet?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCA1MCA1MCI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZGU2YmZmIiByeD0iNiIvPjxwYXRoIGQ9Ik0yNSAzN2EyMSAyMSAwIDEgMSAwLTQyIDIxIDIxIDAgMCAxIDAgNDJ6IiBmaWxsPSIjZmZmIi8+PC9zdmc+)](https://beta.dpid.org/746)
