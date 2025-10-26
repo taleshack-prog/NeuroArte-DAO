@@ -6,8 +6,11 @@
 **Rede:** Base (Ethereum L2)  
 **Missão:** Valorizar artistas aliados à neurodiversidade e financiar pesquisa aberta e ética via transparência on-chain.
 
-## 📜 Manifesto Público
-- Versão PT/EN: [`papers/NeuroArte_DAO_Manifesto_Publico_v1.0.docx`](papers/NeuroArte_DAO_Manifesto_Publico_v1.0.docx)
+## 📜 **Manifesto Público**
+
+- Versão PT/EN: [papers/NeuroArte_DAO_Manifesto_Publico_v1.0.docx](papers/NeuroArte_DAO_Manifesto_Publico_v1.0.docx)  
+- IPFS: [https://ipfs.io/ipfs/bafkreic24lzlfquk3v4cnkoacoaopddtw24twutd7bg63mnorpi3gnvtea](https://ipfs.io/ipfs/bafkreic24lzlfquk3v4cnkoacoaopddtw24twutd7bg63mnorpi3gnvtea)
+
 
 ## 🧾 Whitepaper (Fundador)
 - Documento técnico e político (vFinal): `papers/NeuroArte_DAO_Whitepaper_vFinal_2025_COMPLETO.docx` (hash/IPFS será adicionado após registro).
