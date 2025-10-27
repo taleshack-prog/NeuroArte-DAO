@@ -13,6 +13,7 @@
 
 ## 🧾 Whitepaper (Fundador)
 - Documento técnico e político (vFinal): bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq
+- 7135b8ed-8e59-41a0-860d-7cc07574b25a
 ## 📦 Infraestrutura On-Chain
 
 - ✅ Registro ENS: [`registro_ens_neuroarte_v1.json`](infra/onchain/registro_ens_neuroarte_v1.json)
