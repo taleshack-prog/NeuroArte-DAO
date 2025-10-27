@@ -1,0 +1,32 @@
+<!-- artist.html -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artista | NeuroArte DAO</title>
+  <script defer>
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "pt";
+      document.documentElement.lang = lang;
+      document.getElementById("role-title").textContent =
+        lang === "en" ? "Artist Portal" : "Portal do Artista";
+      document.getElementById("role-description").textContent =
+        lang === "en"
+          ? "Submit your artworks and participate in the Creative Chamber."
+          : "Submeta suas obras e participe da Creative Chamber.";
+    };
+  </script>
+</head>
+<body class="bg-gray-900 text-white">
+  <header class="p-6 bg-purple-800 text-center">
+    <h1 id="role-title" class="text-2xl font-bold"></h1>
+  </header>
+  <main class="p-6">
+    <p id="role-description"></p>
+    <!-- Futuras funcionalidades aqui -->
+  </main>
+</body>
+</html>
+
+<!-- scientist.html and supporter.html follow same structure with role-specific text -->
