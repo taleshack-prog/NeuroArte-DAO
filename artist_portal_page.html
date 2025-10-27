@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artista | NeuroArte DAO</title>
+    <script defer>
+      window.onload = () => {
+        const lang = localStorage.getItem("lang") || "pt";
+        document.documentElement.lang = lang;
+        document.getElementById("title").textContent =
+          lang === "en" ? "Artist Portal" : "Portal do Artista";
+        document.getElementById("subtitle").textContent =
+          lang === "en"
+            ? "Submit your artwork and mint NFTs via Manifold."
+            : "Envie sua arte e realize a mintagem via Manifold.";
+        document.getElementById("labelTitle").textContent =
+          lang === "en" ? "Artwork Title" : "Título da Obra";
+        document.getElementById("labelFile").textContent =
+          lang === "en" ? "Upload File" : "Enviar Arquivo";
+        document.getElementById("labelDesc").textContent =
+          lang === "en" ? "Description" : "Descrição";
+        document.getElementById("btnSubmit").textContent =
+          lang === "en" ? "Submit and Proceed to Mint" : "Enviar e Mintar na Manifold";
+      };
+    </script>
+  </head>
+  <body class="bg-gray-900 text-white font-sans">
+    <main class="max-w-3xl mx-auto p-8">
+      <h1 id="title" class="text-3xl font-bold mb-4"></h1>
+      <p id="subtitle" class="mb-8 text-gray-300"></p>
+
+      <form class="space-y-6">
+        <div>
+          <label id="labelTitle" class="block mb-2"></label>
+          <input type="text" name="title" class="w-full p-2 rounded text-black" required />
+        </div>
+
+        <div>
+          <label id="labelFile" class="block mb-2"></label>
+          <input type="file" name="file" class="w-full p-2 rounded bg-white text-black" required />
+        </div>
+
+        <div>
+          <label id="labelDesc" class="block mb-2"></label>
+          <textarea name="description" rows="4" class="w-full p-2 rounded text-black" required></textarea>
+        </div>
+
+        <a href="https://app.manifold.xyz/" target="_blank">
+          <button id="btnSubmit" type="button" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white w-full"></button>
+        </a>
+      </form>
+    </main>
+  </body>
+</html>
