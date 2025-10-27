@@ -20,6 +20,29 @@
     }
   </script>
 </head>
+  <div class="p-6 text-center">
+  <button id="connectButton" class="bg-purple-600 hover:bg-purple-500 px-6 py-2 rounded-lg text-white transition">Conectar Wallet</button>
+  <p id="walletAddress" class="mt-4 text-sm text-green-400"></p>
+</div>
+
+<script>
+  const connectButton = document.getElementById("connectButton");
+  const walletAddress = document.getElementById("walletAddress");
+
+  connectButton.addEventListener("click", async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        walletAddress.textContent = `Wallet conectada: ${accounts[0]}`;
+      } catch (error) {
+        walletAddress.textContent = "Conexão recusada.";
+      }
+    } else {
+      walletAddress.textContent = "Instale o MetaMask para conectar.";
+    }
+  });
+</script>
+
 <body class="bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans">
   <header class="p-6 flex justify-between items-center border-b border-gray-700">
     <h1 class="text-2xl font-bold">🧠 NeuroArte DAO</h1>
