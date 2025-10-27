@@ -12,7 +12,7 @@
 
 
 ## 🧾 Whitepaper (Fundador)
-- Documento técnico e político (vFinal): `papers/NeuroArte_DAO_Whitepaper_vFinal_2025_COMPLETO.docx` (hash/IPFS será adicionado após registro).
+- Documento técnico e político (vFinal): bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq
 ## 📦 Infraestrutura On-Chain
 
 - ✅ Registro ENS: [`registro_ens_neuroarte_v1.json`](infra/onchain/registro_ens_neuroarte_v1.json)
