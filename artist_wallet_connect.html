@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artista | NeuroArte DAO</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+  <header class="bg-purple-900 p-6 text-center">
+    <h1 class="text-3xl font-bold">Painel do Artista</h1>
+    <p class="text-purple-300">Submeta sua arte, acompanhe vendas e participe da DAO</p>
+  </header>
+
+  <div class="text-center my-4">
+    <button id="connectWallet" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Conectar Wallet</button>
+    <p id="walletAddress" class="mt-2 text-sm text-green-400"></p>
+  </div>
+
+  <main class="max-w-4xl mx-auto p-6">
+    <section class="bg-gray-800 p-6 rounded-xl shadow-xl">
+      <h2 class="text-xl font-semibold mb-4">🎨 Enviar nova obra de arte</h2>
+      <form class="space-y-4">
+        <input type="text" placeholder="Título da obra" class="w-full p-2 rounded text-black">
+        <textarea placeholder="Descrição" class="w-full p-2 rounded text-black"></textarea>
+        <input type="file" class="w-full text-sm">
+        <button type="submit" class="bg-green-500 px-4 py-2 rounded hover:bg-green-600">Submeter</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="bg-gray-800 text-center py-4 mt-10">
+    <p class="text-sm text-gray-400">© 2025 NeuroArte DAO</p>
+  </footer>
+
+  <script>
+    const connectWalletBtn = document.getElementById("connectWallet");
+    const walletAddress = document.getElementById("walletAddress");
+
+    connectWalletBtn.addEventListener("click", async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          walletAddress.textContent = "Wallet conectada: " + accounts[0];
+        } catch (error) {
+          walletAddress.textContent = "Erro ao conectar: " + error.message;
+        }
+      } else {
+        walletAddress.textContent = "Instale a MetaMask para continuar.";
+      }
+    });
+  </script>
+</body>
+</html>
