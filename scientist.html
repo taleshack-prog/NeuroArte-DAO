@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cientista | NeuroArte DAO</title>
+  <script defer>
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "pt";
+      document.documentElement.lang = lang;
+      document.getElementById("role-title").textContent =
+        lang === "en" ? "Scientist Portal" : "Portal do Cientista";
+      document.getElementById("role-description").textContent =
+        lang === "en"
+          ? "Propose research and share results with the community."
+          : "Proponha pesquisas e compartilhe resultados com a comunidade.";
+    };
+  </script>
+</head>
+<body class="bg-gray-900 text-white">
+  <header class="p-6 bg-purple-800 text-center">
+    <h1 id="role-title" class="text-2xl font-bold"></h1>
+  </header>
+  <main class="p-6">
+    <p id="role-description"></p>
+    <!-- Futuras funcionalidades aqui -->
+  </main>
+</body>
+</html>
