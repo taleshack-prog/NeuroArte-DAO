@@ -8,12 +8,23 @@
     window.onload = () => {
       const lang = localStorage.getItem("lang") || "pt";
       document.documentElement.lang = lang;
+
       document.getElementById("role-title").textContent =
         lang === "en" ? "Artist Portal" : "Portal do Artista";
+
       document.getElementById("role-description").textContent =
         lang === "en"
-          ? "Submit your artworks and participate in the Creative Chamber."
-          : "Submeta suas obras e participe da Creative Chamber.";
+          ? "Submit your artworks and mint on Manifold."
+          : "Submeta suas obras e realize mintagem na Manifold.";
+
+      document.getElementById("wallet-button").textContent =
+        lang === "en" ? "Connect Wallet" : "Conectar Carteira";
+
+      document.getElementById("mint-button").textContent =
+        lang === "en" ? "Go to Manifold Portal" : "Ir para o Portal da Manifold";
+
+      document.getElementById("back-button").textContent =
+        lang === "en" ? "← Back to Home Page" : "← Voltar à Página Inicial";
     };
   </script>
 </head>
@@ -21,17 +32,31 @@
   <header class="p-6 bg-purple-800 text-center">
     <h1 id="role-title" class="text-2xl font-bold"></h1>
   </header>
-  <main class="p-6">
-    <p id="role-description"></p>
-    <!-- Futuras funcionalidades aqui -->
+
+  <main class="p-6 space-y-6 max-w-xl mx-auto">
+    <p id="role-description" class="text-lg text-center"></p>
+
+    <div class="text-center">
+      <button id="wallet-button" class="bg-purple-700 hover:bg-purple-600 text-white font-semibold px-6 py-2 rounded-lg transition">
+        Conectar Carteira
+      </button>
+    </div>
+
+    <div class="text-center">
+      <a href="https://manifold.xyz" target="_blank">
+        <button id="mint-button" class="bg-white text-purple-800 px-6 py-2 rounded hover:bg-purple-100 font-semibold transition">
+          Ir para o Portal da Manifold
+        </button>
+      </a>
+    </div>
+
+    <div class="text-center mt-8">
+      <a href="index.html">
+        <button id="back-button" class="bg-purple-800 text-white px-4 py-2 rounded hover:bg-purple-700">
+          ← Voltar à Página Inicial
+        </button>
+      </a>
+    </div>
   </main>
-<div class="mt-6 text-center">
-  <a href="index.html">
-    <button class="bg-purple-800 text-white px-4 py-2 rounded hover:bg-purple-700">
-      ⬅ Voltar à Página Inicial
-    </button>
-  </a>
-</div>
-  
 </body>
 </html>
