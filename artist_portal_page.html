@@ -49,6 +49,57 @@
         <a href="https://app.manifold.xyz/" target="_blank">
           <button id="btnSubmit" type="button" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white w-full"></button>
           <!-- 🎨 Galeria NeuroArte DAO -->
+<section class="mt-12 text-center">
+  <h2 class="text-2xl font-semibold mb-4">🖼️ Galeria NeuroArte DAO</h2>
+  <p class="text-gray-300 mb-6">Obras mintadas por artistas da DAO e listadas na <span class="text-purple-400 font-medium">Manifold</span>.</p>
+
+  <div id="artGallery" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 justify-center">
+    <!-- Cards de arte serão carregados aqui -->
+  </div>
+</section>
+
+<script>
+  // Exemplo de obras (mock). Substituir por fetch da API da Manifold depois.
+  const artworks = [
+    {
+      title: "Neuroesfera I",
+      artist: "Tales Hack",
+      image: "https://ipfs.io/ipfs/bafybeiexample1",
+      link: "https://manifold.xyz/t/0x1234",
+      price: "0.12 ETH"
+    },
+    {
+      title: "Fluxo Divergente",
+      artist: "Maya Costa",
+      image: "https://ipfs.io/ipfs/bafybeiexample2",
+      link: "https://manifold.xyz/t/0x5678",
+      price: "0.20 ETH"
+    }
+  ];
+
+  function renderGallery(data) {
+    const gallery = document.getElementById("artGallery");
+    gallery.innerHTML = "";
+    data.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-purple-500/20 transition duration-200";
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.title}" class="w-full h-56 object-cover border-b border-purple-700">
+        <div class="p-4">
+          <h3 class="text-white font-semibold text-lg mb-1">${item.title}</h3>
+          <p class="text-gray-400 text-sm mb-2">👤 ${item.artist}</p>
+          <p class="text-gray-300 text-sm mb-4">💰 ${item.price}</p>
+          <a href="${item.link}" target="_blank" class="inline-block bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-md transition">Ver na Manifold</a>
+        </div>
+      `;
+      gallery.appendChild(card);
+    });
+  }
+
+  renderGallery(artworks);
+</script>
+
+          <!-- 🎨 Galeria NeuroArte DAO -->
 <section class="gallery-section">
   <h2>🖼️ Galeria NeuroArte DAO</h2>
   <p class="gallery-intro">
