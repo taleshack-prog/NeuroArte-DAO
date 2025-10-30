@@ -22,6 +22,15 @@
 - 🔍 Ver no Etherscan: [tx 0x17bd...132a](https://etherscan.io/tx/0x17bd39e1bc1a3c9a1546756351b2e53a6a0107b3047c113c7c1ca53c0914132a)
 - 🪙 Especificação do token NEURO: [token_neuroarte_v1.json](infra/onchain/token_neuroarte_v1.json)
 #### 🧾 Registro ENS Completo (IPFS + Metadados)
+## 🚀 Lançamento do Token
+
+O modelo de emissão e distribuição do token $NEURO segue um blueprint público e auditável:
+
+- 📘 [Token Launch Blueprint](./docs/launch/NeuroArteDAO_Token_Launch_Blueprint.md)
+- Supply fixo: **10.000.000 $NEURO** (sem mint adicional)
+- Rede: **Base (Ethereum L2)**
+- Função: Token de governança e coordenação científica (não financeiro)
+
 
 > Backup on-chain da identidade da NeuroArte DAO (IPFS, ENS e GitHub).
 
