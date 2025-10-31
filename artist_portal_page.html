@@ -246,18 +246,63 @@
       </form>
     </main>
     <!-- Rodapé com botão Voltar -->
-<footer style="
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
-  padding: 12px 0;
-  text-align: center;
-  z-index: 50;">
+<!-- espaçamento extra para o footer -->
+<div style="height:72px"></div>
+
+<footer id="daoFooter" 
+  style="
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
+    padding: 14px 0 10px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    z-index: 50;
+  ">
+
   <a href="index.html"
-     style="display:inline-block; background:#6d28d9; color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none;">
+     style="display:inline-block; background:#6d28d9; color:#fff;
+            padding:8px 14px; border-radius:8px; text-decoration:none; margin-bottom:6px;">
     ← Voltar à Página Inicial
   </a>
+
+  <p id="footerText" 
+     style="color:#bbb; font-size:0.9rem; margin-top:6px;">
+     Feito com 🧠 & 💜 pela comunidade NeuroArte DAO.
+  </p>
 </footer>
+
+<script>
+  // Efeito de fade-in do rodapé
+  window.addEventListener('scroll', () => {
+    const footer = document.getElementById('daoFooter');
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.body.scrollHeight;
+    
+    // Quando o usuário chega ao final, o footer aparece suavemente
+    if (scrollY + windowHeight >= docHeight - 100) {
+      footer.style.opacity = 1;
+    } else {
+      footer.style.opacity = 0;
+    }
+  });
+
+  // Mensagens rotativas no rodapé
+  const messages = [
+    "Feito com 🧠 & 💜 pela comunidade NeuroArte DAO.",
+    "Arte e ciência, unidas em rede descentralizada.",
+    "🧬 Inspirando conexões entre mente e criação.",
+    "DAO: onde a arte encontra a neurociência."
+  ];
+
+  let index = 0;
+  setInterval(() => {
+    index = (index + 1) % messages.length;
+    document.getElementById('footerText').textContent = messages[index];
+  }, 6000); // muda a cada 6 segundos
+</script>
 
   </body>
 </html>
