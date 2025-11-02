@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apoiador | NeuroArte DAO</title>
-  <script defer>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="role-title">Apoiador | NeuroArte DAO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
     window.onload = () => {
       const lang = localStorage.getItem("lang") || "pt";
       document.documentElement.lang = lang;
+
       document.getElementById("role-title").textContent =
+        lang === "en" ? "Supporter | NeuroArte DAO" : "Apoiador | NeuroArte DAO";
+      document.getElementById("main-heading").textContent =
         lang === "en" ? "Supporter Portal" : "Portal do Apoiador";
-      document.getElementById("role-description").textContent =
+      document.getElementById("description").textContent =
         lang === "en"
-          ? "Acquire tokens, vote and support open research."
-          : "Adquira tokens, vote e apoie a pesquisa aberta.";
+          ? "Welcome! Support the project and explore decentralized governance."
+          : "Bem-vindo! Apoie o projeto e explore a governança descentralizada.";
+      document.getElementById("back-button").textContent =
+        lang === "en" ? "← Back to Home" : "← Voltar à Página Inicial";
+      document.getElementById("portal-button-label").textContent =
+        lang === "en" ? "Access Supporter Portal" : "Acessar Portal do Apoiador";
     };
   </script>
 </head>
-<body class="bg-gray-900 text-white">
-  <header class="p-6 bg-purple-800 text-center">
-    <h1 id="role-title" class="text-2xl font-bold"></h1>
-  </header>
-  <main class="p-6">
-    <p id="role-description"></p>
-    <!-- Futuras funcionalidades aqui -->
+<body class="bg-purple-900 text-white min-h-screen flex flex-col items-center justify-center p-6">
+  <main class="text-center space-y-4">
+    <h1 id="main-heading" class="text-2xl font-bold">Portal do Apoiador</h1>
+    <p id="description">Bem-vindo! Apoie o projeto e explore a governança descentralizada.</p>
+    <button id="back-button" onclick="window.location.href='index.html'" class="underline">← Voltar à Página Inicial</button>
+    <div class="mt-6">
+      <a href="supporter_portal_page.html" class="bg-white text-purple-800 px-6 py-2 rounded-xl hover:bg-gray-200">
+        <span id="portal-button-label">Acessar Portal do Apoiador</span>
+      </a>
+    </div>
   </main>
- <div class="mt-6 text-center">
-  <a href="index.html">
-    <button id="back-button" class="bg-purple-800 text-white px-4 py-2 rounded hover:bg-purple-700">
-      ⬅ Voltar à Página Inicial
-    </button>
-  </a>
-</div>
- 
 </body>
 </html>
