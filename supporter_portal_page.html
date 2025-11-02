@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="role-title">Portal dos Apoiadores</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.onload = () => {
+      const lang = localStorage.getItem("lang") || "pt";
+      document.documentElement.lang = lang;
+
+      document.getElementById("role-title").textContent =
+        lang === "en" ? "Supporter Portal" : "Portal dos Apoiadores";
+      document.getElementById("role-description").textContent =
+        lang === "en"
+          ? "Acquire tokens, vote and support open research."
+          : "Adquira tokens, vote e apoie a pesquisa aberta.";
+    };
+  </script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+  <div class="max-w-4xl mx-auto p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold mb-2" id="role-title">Portal dos Apoiadores</h1>
+      <p class="text-sm text-gray-600 mb-2" id="role-description">Adquira tokens, vote e apoie a pesquisa aberta.</p>
+      <button onclick="window.location.href='index.html'" class="text-blue-600 hover:underline">← Voltar à Página Inicial</button>
+    </header>
+
+    <!-- Compra de Tokens -->
+    <section class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Comprar $NEURO</h2>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded-xl">Conectar Carteira</button>
+      <p class="mt-2 text-sm text-gray-600">Em breve: compra direta via contrato inteligente.</p>
+    </section>
+
+    <!-- Votação em Pautas -->
+    <section class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Pautas em Votação</h2>
+      <div class="space-y-4">
+        <div class="border p-4 rounded-xl">
+          <h3 class="font-bold">Proposta #12: Financiamento da Residência Artística</h3>
+          <p class="text-sm text-gray-600">Validação conjunta pela Câmara Criativa e Econômica</p>
+          <div class="mt-2 space-x-2">
+            <button class="bg-green-500 text-white px-4 py-1 rounded-xl">Votar SIM</button>
+            <button class="bg-red-500 text-white px-4 py-1 rounded-xl">Votar NÃO</button>
+            <button class="bg-gray-400 text-white px-4 py-1 rounded-xl">Abstenção</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Envio de Sugestões -->
+    <section class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Sugira uma Nova Pauta</h2>
+      <form class="space-y-4">
+        <input type="text" placeholder="Título da Proposta" class="w-full border rounded-xl p-2" required>
+        <textarea placeholder="Descrição detalhada" class="w-full border rounded-xl p-2 h-24" required></textarea>
+        <button class="bg-purple-600 text-white px-4 py-2 rounded-xl">Enviar Sugestão</button>
+      </form>
+    </section>
+
+    <!-- Transparência -->
+    <section class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Transparência da DAO</h2>
+      <ul class="list-disc pl-6 text-sm text-gray-700 space-y-1">
+        <li>Distribuição de tokens: <a href="#" class="text-blue-600 underline">ver em Dune</a></li>
+        <li>Propostas anteriores e resultados</li>
+        <li>Auditorias públicas: contratos, CIDs e hashes registrados</li>
+        <li>Fontes de financiamento e COI declarados</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
