@@ -3,45 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Curadoria – NeuroArte DAO</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      padding-bottom: 80px;
-      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
-      color: white;
-      font-family: 'Inter', sans-serif;
+  <title>Painel de Curadoria - NeuroArte DAO</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script defer>
+    let currentWallet = null;
+    const curatorWallet = "0xE9eFC721405e1026B1ee91C07B2534e1796632A4";
+
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          currentWallet = accounts[0];
+          document.getElementById("walletStatus").textContent = `Wallet conectada: ${currentWallet}`;
+          checkAccess();
+        } catch (error) {
+          document.getElementById("walletStatus").textContent = "Conexão recusada.";
+        }
+      } else {
+        document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
+      }
     }
-  </style>
+
+    function checkAccess() {
+      const approveButtons = document.querySelectorAll(".approve-btn");
+      if (currentWallet && currentWallet.toLowerCase() === curatorWallet.toLowerCase()) {
+        approveButtons.forEach(btn => btn.disabled = false);
+      } else {
+        approveButtons.forEach(btn => {
+          btn.disabled = true;
+          btn.title = "Apenas a wallet oficial da curadoria pode aprovar.";
+        });
+      }
+    }
+  </script>
 </head>
-<body class="text-white">
-  <header class="text-center mt-10">
-    <h1 class="text-4xl font-bold">🧪 Painel de Curadoria</h1>
-    <p class="text-gray-300 mt-2">Revisão das obras submetidas à NeuroArte DAO</p>
-    <nav class="mt-4">
-      <a href="index.html" class="text-purple-400 underline mx-2">🏠 Início</a>
-      <a href="artist_portal_page.html" class="text-purple-400 underline mx-2">🎨 Portal do Artista</a>
-      <a href="curadoria_portal_page.html" class="text-purple-400 underline mx-2 font-bold">🧪 Curadoria</a>
-    </nav>
+<body class="bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans">
+  <header class="text-center py-4">
+    <h1 class="text-3xl font-bold">🖋️ Painel de Curadoria</h1>
+    <p class="text-sm">Revisão das obras submetidas à NeuroArte DAO</p>
+    <div class="mt-2">
+      <a href="index.html" class="underline text-purple-400">🏠 Início</a>
+      <a href="artist_portal_page.html" class="underline text-purple-400 ml-4">🧑‍🎨 Portal do Artista</a>
+      <a href="curadoria_portal_page.html" class="underline text-purple-400 ml-4">🖋️ Curadoria</a>
+    </div>
+    <div class="mt-4">
+      <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded">🔌 Conectar Wallet</button>
+      <p id="walletStatus" class="text-sm mt-1 text-gray-300"></p>
+    </div>
   </header>
 
-  <section class="max-w-4xl mx-auto mt-10 p-6 bg-gray-900 bg-opacity-80 rounded-2xl shadow-xl">
-    <h2 class="text-2xl font-semibold mb-6">🖼️ Obras Submetidas</h2>
-    <div class="space-y-6">
-      <div class="bg-gray-800 p-4 rounded-xl shadow border border-purple-700">
-        <img src="https://ipfs.io/ipfs/bafybeiexample1" class="w-full h-60 object-cover rounded mb-4" alt="Neuroesfera I">
-        <h3 class="text-xl font-bold">Neuroesfera I</h3>
-        <p class="text-sm text-gray-400">Artista: Tales Hack</p>
-        <p class="text-sm text-gray-400">Edições: 25</p>
-        <p class="text-sm text-gray-400 mb-4">Wallet: 0x123...abc</p>
-        <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded mr-2">✅ Aprovar</button>
-        <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">❌ Rejeitar</button>
+  <main class="max-w-3xl mx-auto p-4">
+    <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
+      <h2 class="text-xl font-bold mb-4 flex items-center">
+        🖼️ <span class="ml-2">Obras Submetidas</span>
+      </h2>
+      <div class="bg-gray-800 p-4 rounded-lg border border-purple-600">
+        <p class="text-lg font-semibold">Neuroesfera I</p>
+        <p class="text-sm text-gray-400">Artista: Tales Hack<br/>Edições: 25<br/>Wallet: 0x123...abc</p>
+        <div class="flex space-x-2 mt-2">
+          <button class="approve-btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50" disabled>✅ Aprovar</button>
+          <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">❌ Rejeitar</button>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <footer class="mt-16 text-center text-sm text-gray-500">
-    NeuroArte DAO © 2025
-  </footer>
+    </section>
+  </main>
 </body>
 </html>
