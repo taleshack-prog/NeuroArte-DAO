@@ -7,12 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
+      padding-bottom: 100px;
       background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
       color: white;
       font-family: 'Inter', sans-serif;
     }
     footer {
-      position: fixed;
+      position: relative;
       left: 0; right: 0; bottom: 0;
       background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
       padding: 12px 0;
@@ -21,25 +22,18 @@
       opacity: 0;
       transition: opacity 1.25s ease-in-out;
     }
-    .art-card {
-      background-color: #1e293b;
-      padding: 1rem;
-      border-radius: 0.75rem;
-      border: 2px solid #7c3aed;
-      text-align: center;
-      margin: 0.5rem;
-    }
   </style>
 </head>
 <body class="text-white">
+
   <header class="text-center mt-10">
     <h1 class="text-4xl font-bold">🎨 Portal do Artista</h1>
-    <p class="text-gray-300 mt-2">Envie sua arte e realize a mintagem via Manifold.</p>
+    <p class="text-gray-300 mt-2">Submeta sua arte e contribua com a galeria da NeuroArte DAO.</p>
   </header>
 
-  <!-- Formulário de Submissão -->
+  <!-- Submissão para Curadoria -->
   <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-4">🎨 Submeter Obra para Mintagem</h2>
+    <h2 class="text-2xl font-semibold mb-4">🖼️ Submeter Obra para Mintagem</h2>
     <form class="space-y-4">
       <input type="text" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
       <input type="url" placeholder="Link do Arquivo (IPFS ou Arweave)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
@@ -50,11 +44,11 @@
     <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
   </section>
 
-  <!-- Galeria de Obras -->
-  <section class="text-center mt-16">
-    <h2 class="text-2xl font-semibold mb-2">🎨 Galeria NeuroArte DAO</h2>
-    <p class="text-gray-300 mb-6">Obras mintadas por artistas da DAO e listadas na <a href="https://manifold.xyz" class="text-purple-400 underline">Manifold</a>.</p>
-    <div id="artGallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4"></div>
+  <!-- Galeria -->
+  <section class="max-w-4xl mx-auto mt-12 px-4">
+    <h2 class="text-xl font-semibold text-center mb-2">🖼️ Galeria NeuroArte DAO</h2>
+    <p class="text-center text-sm text-gray-400 mb-6">Obras mintadas por artistas da DAO e listadas na <a href="https://manifold.xyz" class="text-purple-400 underline">Manifold</a>.</p>
+    <div id="artGallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
   </section>
 
   <!-- Rodapé -->
@@ -69,8 +63,44 @@
     </p>
   </footer>
 
-  <!-- Scripts -->
+  <!-- Script -->
   <script>
+    const artworks = [
+      {
+        title: "Neuroesfera I",
+        artist: "Tales Hack",
+        image: "https://ipfs.io/ipfs/bafybeiexample1",
+        link: "https://manifold.xyz/c/0x1234",
+        price: "0.12 ETH"
+      },
+      {
+        title: "Fluxo Divergente",
+        artist: "Maya Costa",
+        image: "https://ipfs.io/ipfs/bafybeiexample2",
+        link: "https://manifold.xyz/c/0x5678",
+        price: "0.20 ETH"
+      }
+    ];
+
+    function renderGallery(data) {
+      const gallery = document.getElementById("artGallery");
+      gallery.innerHTML = "";
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-xl p-4 border border-purple-700 shadow";
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" class="w-full h-40 object-cover rounded" />
+          <h3 class="mt-2 text-lg font-bold">${item.title}</h3>
+          <p class="text-sm">👤 ${item.artist}</p>
+          <p class="text-sm">💰 ${item.price}</p>
+          <a class="text-sm text-purple-400 underline" href="${item.link}" target="_blank">Ver na Manifold</a>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+
+    renderGallery(artworks);
+
     window.addEventListener('scroll', () => {
       const footer = document.getElementById('daoFooter');
       const scrollY = window.scrollY;
@@ -94,43 +124,6 @@
       index = (index + 1) % messages.length;
       document.getElementById("footerText").textContent = messages[index];
     }, 6000);
-
-    // Exemplo de dados locais (substituir futuramente por fetch da Manifold)
-    const artworks = [
-      {
-        title: "Neuroesfera I",
-        artist: "Tales Hack",
-        image: "https://ipfs.io/ipfs/bafybeiexample1",
-        link: "https://manifold.xyz/c/0x1234",
-        price: "0.12 ETH"
-      },
-      {
-        title: "Fluxo Divergente",
-        artist: "Maya Costa",
-        image: "https://ipfs.io/ipfs/bafybeiexample2",
-        link: "https://manifold.xyz/c/0x5678",
-        price: "0.20 ETH"
-      }
-    ];
-
-    function renderGallery(data) {
-      const gallery = document.getElementById("artGallery");
-      gallery.innerHTML = "";
-      data.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "art-card";
-        card.innerHTML = `
-          <img src="${item.image}" alt="${item.title}" class="mb-2 mx-auto"/>
-          <h3 class="text-lg font-semibold">${item.title}</h3>
-          <p class="text-sm text-purple-400">${item.artist}</p>
-          <p class="text-sm">💰 ${item.price}</p>
-          <a href="${item.link}" target="_blank" class="text-sm text-white bg-purple-600 px-3 py-1 rounded mt-2 inline-block">Ver na Manifold</a>
-        `;
-        gallery.appendChild(card);
-      });
-    }
-
-    renderGallery(artworks);
   </script>
 </body>
 </html>
