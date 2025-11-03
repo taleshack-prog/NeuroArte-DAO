@@ -23,6 +23,22 @@
     }
   </style>
 </head>
+  <script>
+  async function connectWallet() {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const wallet = accounts[0];
+        document.getElementById("walletStatus").textContent = `Wallet conectada: ${wallet}`;
+      } catch (error) {
+        document.getElementById("walletStatus").textContent = "Conexão recusada.";
+      }
+    } else {
+      document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
+    }
+  }
+</script>
+
 <body class="text-white">
   <header class="text-center mt-10">
     <h1 class="text-4xl font-bold">🧠 Portal do Apoiador</h1>
@@ -31,8 +47,11 @@
 
   <!-- Seção: Participação -->
   <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
-    <h2 class="text-2xl font-semibold mb-4">🎟️ Participar da DAO</h2>
-    <button class="bg-blue-600 px-4 py-2 rounded-xl">Conectar Carteira</button>
+    <button onclick="connectWallet()" class="bg-blue-600 px-4 py-2 rounded-xl">
+  🔌 Conectar Carteira
+</button>
+<p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
+
     <p class="mt-2 text-sm text-gray-300">Compra de $NEURO em breve.</p>
   </section>
 
