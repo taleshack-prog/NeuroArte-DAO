@@ -24,11 +24,34 @@
     }
   </style>
 </head>
+ <script>
+  async function connectWallet() {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const wallet = accounts[0];
+        document.getElementById("walletStatus").textContent = `Wallet conectada: ${wallet}`;
+      } catch (error) {
+        document.getElementById("walletStatus").textContent = "Conexão recusada.";
+      }
+    } else {
+      document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
+    }
+  }
+</script>
+
 <body class="text-white">
 
   <header class="text-center mt-10">
     <h1 class="text-4xl font-bold">🎨 Portal do Artista</h1>
     <p class="text-gray-300 mt-2">Submeta sua arte e contribua com a galeria da NeuroArte DAO.</p>
+    <div class="mt-4">
+  <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">
+    🔌 Conectar Wallet
+  </button>
+  <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
+</div>
+
   </header>
 
   <!-- Submissão para Curadoria -->
