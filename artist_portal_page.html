@@ -303,6 +303,90 @@
     document.getElementById('footerText').textContent = messages[index];
   }, 6000); // muda a cada 6 segundos
 </script>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal do Apoiador – NeuroArte DAO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+    footer {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
+      padding: 12px 0;
+      text-align: center;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 1.25s ease-in-out;
+    }
+  </style>
+</head>
+<body class="text-white">
+  <header class="text-center mt-10">
+    <h1 class="text-4xl font-bold">🧠 Portal do Apoiador</h1>
+    <p class="text-gray-300 mt-2">Engaje-se com a governança e apoie a ciência aberta.</p>
+  </header>
+
+  <!-- Seção: Submissão de Obra pelo Artista -->
+  <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">🎨 Submeter Obra para Mintagem</h2>
+    <form class="space-y-4">
+      <input type="text" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+      <input type="url" placeholder="Link do Arquivo (IPFS ou Arweave)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+      <input type="number" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" min="1" required>
+      <input type="text" placeholder="Wallet do Artista (0x...)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+      <button class="bg-purple-700 px-4 py-2 rounded-xl">Enviar para Curadoria da DAO</button>
+    </form>
+    <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
+  </section>
+
+  <!-- Rodapé -->
+  <footer id="daoFooter">
+    <a href="index.html"
+       style="display:inline-block; background:#d026b1; color:#fff;
+              padding:8px 14px; border-radius:8px; text-decoration:none;">
+      ← Voltar à Página Inicial
+    </a>
+    <p id="footerText" class="text-gray-400 text-sm mt-2">
+      Feito com 🧠 e 💜 pela comunidade NeuroArte DAO.
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    window.addEventListener('scroll', () => {
+      const footer = document.getElementById('daoFooter');
+      const scrollY = window.scrollY;
+      const codeHeight = document.body.scrollHeight;
+      const windowH = window.innerHeight;
+      if ((scrollY + windowH) >= codeHeight - 100) {
+        footer.style.opacity = 1;
+      } else {
+        footer.style.opacity = 0;
+      }
+    });
+
+    const messages = [
+      "Feito com 🧠 e 💜 pela comunidade NeuroArte DAO.",
+      "Governança ética, transparente e descentralizada.",
+      "Onde arte e neurodiversidade encontram a pesquisa.",
+      "DAO: ética, arte e ciência em rede viva."
+    ];
+    let index = 0;
+    setInterval(() => {
+      index = (index + 1) % messages.length;
+      document.getElementById("footerText").textContent = messages[index];
+    }, 6000);
+  </script>
+</body>
+</html>
 
   </body>
 </html>
