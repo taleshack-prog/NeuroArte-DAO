@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curadoria – NeuroArte DAO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      padding-bottom: 80px;
+      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="text-white">
+  <header class="text-center mt-10">
+    <h1 class="text-4xl font-bold">🧪 Painel de Curadoria</h1>
+    <p class="text-gray-300 mt-2">Revisão das obras submetidas à NeuroArte DAO</p>
+  </header>
+
+  <section class="max-w-4xl mx-auto mt-10 p-6 bg-gray-900 bg-opacity-80 rounded-2xl shadow-xl">
+    <h2 class="text-2xl font-semibold mb-6">🖼️ Obras Submetidas</h2>
+    <div class="space-y-6">
+      <div class="bg-gray-800 p-4 rounded-xl shadow border border-purple-700">
+        <img src="https://ipfs.io/ipfs/bafybeiexample1" class="w-full h-60 object-cover rounded mb-4" alt="Neuroesfera I">
+        <h3 class="text-xl font-bold">Neuroesfera I</h3>
+        <p class="text-sm text-gray-400">Artista: Tales Hack</p>
+        <p class="text-sm text-gray-400">Edições: 25</p>
+        <p class="text-sm text-gray-400 mb-4">Wallet: 0x123...abc</p>
+        <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded mr-2">✅ Aprovar</button>
+        <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">❌ Rejeitar</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mt-16 text-center text-sm text-gray-500">
+    NeuroArte DAO © 2025
+  </footer>
+</body>
+</html>
