@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar na NeuroArte DAO</title>
+  <script>
+    async function salvarMembro(event) {
+      event.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const wallet = document.getElementById('wallet').value;
+      const perfil = document.getElementById('perfil').value;
+
+      if (!nome || !wallet || !perfil) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+      }
+
+      const novoMembro = { nome, wallet, perfil };
+
+      let membros = [];
+      const membrosSalvos = localStorage.getItem('membrosDAO');
+      if (membrosSalvos) {
+        membros = JSON.parse(membrosSalvos);
+      }
+      membros.push(novoMembro);
+      localStorage.setItem('membrosDAO', JSON.stringify(membros));
+
+      alert("Membro registrado com sucesso!");
+      document.getElementById("form-membro").reset();
+      exibirMembros();
+    }
+
+    function exibirMembros() {
+      const lista = document.getElementById('lista-membros');
+      lista.innerHTML = '';
+      const membrosSalvos = localStorage.getItem('membrosDAO');
+      if (membrosSalvos) {
+        const membros = JSON.parse(membrosSalvos);
+        membros.forEach((m, i) => {
+          const item = document.createElement('li');
+          item.textContent = `${i + 1}. ${m.nome} | ${m.wallet} | ${m.perfil}`;
+          lista.appendChild(item);
+        });
+      }
+    }
+
+    window.onload = exibirMembros;
+  </script>
+</head>
+<body style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 2rem;">
+  <h1>Entrar na NeuroArte DAO</h1>
+  <form id="form-membro" onsubmit="salvarMembro(event)">
+    <label for="nome">Nome ou Pseudônimo:</label><br>
+    <input type="text" id="nome" required><br><br>
+
+    <label for="wallet">Endereço da Wallet:</label><br>
+    <input type="text" id="wallet" required><br><br>
+
+    <label for="perfil">Interesse / Perfil:</label><br>
+    <select id="perfil" required>
+      <option value="">Selecione</option>
+      <option value="Artista">Artista</option>
+      <option value="Cientista">Cientista</option>
+      <option value="Apoiador">Apoiador</option>
+    </select><br><br>
+
+    <button type="submit">Registrar</button>
+  </form>
+
+  <h2>Membros Públicos Registrados</h2>
+  <ul id="lista-membros"></ul>
+</body>
+</html>
