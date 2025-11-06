@@ -67,5 +67,36 @@
       </div>
     </section>
   </main>
+  <script>
+  // Lista de wallets autorizadas (pode expandir depois)
+  const allowedCurators = [
+    "0xE9eFC721405e1026B1ee91C07B2534e1796632A4".toLowerCase()
+  ];
+
+  // Verifica se o usuário está conectado e autorizado
+  async function checkWalletAccess() {
+    if (typeof window.ethereum === 'undefined') {
+      alert("MetaMask não detectado. Instale para acessar.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const userWallet = accounts[0].toLowerCase();
+
+      if (!allowedCurators.includes(userWallet)) {
+        alert("Acesso restrito à curadoria. Wallet não autorizada.");
+        window.location.href = "index.html";
+      }
+    } catch (err) {
+      alert("Erro ao conectar à wallet.");
+      window.location.href = "index.html";
+    }
+  }
+
+  window.addEventListener('load', checkWalletAccess);
+</script>
+
 </body>
 </html>
