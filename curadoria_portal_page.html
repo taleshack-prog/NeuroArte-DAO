@@ -7,7 +7,11 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script defer>
     let currentWallet = null;
-    const curatorWallet = "0xE9eFC721405e1026B1ee91C07B2534e1796632A4";
+    const allowedCurators = [
+  "0xE9eFC721405e1026B1ee91C07B2534e1796632A4",
+  // adicione outras wallets aqui
+].map(w => w.toLowerCase());
+
 
     async function connectWallet() {
       if (typeof window.ethereum !== "undefined") {
@@ -26,7 +30,7 @@
 
     function checkAccess() {
       const approveButtons = document.querySelectorAll(".approve-btn");
-      if (currentWallet && currentWallet.toLowerCase() === curatorWallet.toLowerCase()) {
+       if (currentWallet && allowedCurators.includes(currentWallet.toLowerCase())) {
         approveButtons.forEach(btn => btn.disabled = false);
       } else {
         approveButtons.forEach(btn => {
