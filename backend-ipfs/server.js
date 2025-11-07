@@ -10,6 +10,9 @@ const port = 3000;
 const upload = multer({ dest: "uploads/" });
 
 const nftStorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
+app.get("/", (req, res) => {
+  res.send("Servidor da NeuroArte DAO está no ar 🧠🎨🚀");
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
