@@ -23,6 +23,18 @@
 - 🪙 Especificação do token NEURO: [token_neuroarte_v1.json](infra/onchain/token_neuroarte_v1.json)
 #### 🧾 Registro ENS Completo (IPFS + Metadados)
 ## 🚀 Lançamento do Token
+---
+
+## 💜 Support NeuroArte DAO
+
+If you believe in our mission and want to help fuel decentralized research and neurodivergent art, consider supporting us directly:
+
+[![Send ETH on Base](https://img.shields.io/badge/Send%20ETH%20to%20NeuroArte%20DAO-0xE9eF...632A4-blue?style=flat-square&logo=ethereum)](https://base.etherscan.io/address/0xE9eFC721405e1026B1ee91C07B2534e1796632A4)
+
+🔗 **Wallet (Base L2):** `0xE9eFC721405e1026B1ee91C07B2534e1796632A4`  
+Every contribution helps expand open research, fair governance, and cultural equity in the web3 space.
+
+---
 
 O modelo de emissão e distribuição do token $NEURO segue um blueprint público e auditável:
 
