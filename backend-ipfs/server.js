@@ -32,6 +32,11 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     if (!req.file) {
       return res.status(400).send("Nenhum arquivo enviado.");
     }
+    console.log("📩 Dados recebidos no upload:");
+console.log("Title:", req.body.title);
+console.log("Description:", req.body.description);
+console.log("Arquivo:", req.file);
+
 
     const filePath = req.file.path;
     const fileData = await fs.promises.readFile(filePath);
