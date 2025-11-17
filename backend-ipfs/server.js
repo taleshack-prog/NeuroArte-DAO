@@ -9,7 +9,7 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // ✅ Mantém flexível pra ambiente
 
 // Configura o upload local temporário
 const upload = multer({ dest: "uploads/" });
@@ -32,11 +32,11 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     if (!req.file) {
       return res.status(400).send("Nenhum arquivo enviado.");
     }
-    console.log("📩 Dados recebidos no upload:");
-console.log("Title:", req.body.title);
-console.log("Description:", req.body.description);
-console.log("Arquivo:", req.file);
 
+    console.log("📩 Dados recebidos no upload:");
+    console.log("Title:", req.body.title);
+    console.log("Description:", req.body.description);
+    console.log("Arquivo:", req.file);
 
     const filePath = req.file.path;
     const fileData = await fs.promises.readFile(filePath);
@@ -52,7 +52,7 @@ console.log("Arquivo:", req.file);
 
     return res.status(200).json({
       cid: metadata.ipnft,
-      url: metadata.url,
+      url: `https://ipfs.io/ipfs/${metadata.data.image.href.split("/").pop()}`, // 💡 link IPFS direto pra imagem
       message: "Upload feito com sucesso!",
     });
   } catch (err) {
@@ -61,7 +61,7 @@ console.log("Arquivo:", req.file);
   }
 });
 
-// Inicializa o servidor
-app.listen(port, () => {
-  console.log(`✅ Servidor ativo em http://localhost:${port}`);
+// Inicializa o servidor na porta correta (Render-friendly!)
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ Servidor ativo na porta ${port}`);
 });
