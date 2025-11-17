@@ -37,14 +37,18 @@
   <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-4">🎓 Submeter Obra para Mintagem</h2>
     <form class="space-y-4">
-      <input type="text" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
-      <input type="file" id="artFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
-      <button type="button" onclick="uploadArt()" class="bg-purple-700 px-4 py-2 rounded-xl">📅 Enviar Arte</button>
-      <input type="text" id="ipfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 border border-purple-700" readonly required>
-      <input type="number" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" min="1" required>
-      <input type="text" placeholder="Wallet do Artista (0x...)" id="walletInput" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
-      <button type="submit" id="submitButton" class="bg-purple-700 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
-    </form>
+      <input type="text" id="titleInput" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+
+<!-- Novo campo de descrição logo abaixo -->
+<textarea id="descriptionInput" placeholder="Descrição da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required></textarea>
+
+<input type="file" id="artFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+<button type="button" onclick="uploadArt()" class="bg-purple-700 px-4 py-2 rounded-xl">📅 Enviar Arte</button>
+<input type="text" id="ipfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 border border-purple-700" readonly required>
+<input type="number" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" min="1" required>
+<input type="text" placeholder="Wallet do Artista (0x...)" id="walletInput" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+<button type="submit" id="submitButton" class="bg-purple-700 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
+
     <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
   </section>
 
