@@ -9,7 +9,7 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 
-const port = process.env.PORT || 3000; // ✅ Mantém flexível pra ambiente
+const port = process.env.PORT || 3000;
 
 // Configura o upload local temporário
 const upload = multer({ dest: "uploads/" });
@@ -50,9 +50,13 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
 
     fs.unlinkSync(filePath); // limpa temporário
 
+    // ✅ Corrige o link direto da imagem no IPFS
+    const imageCid = metadata.data.image.href.split("/").pop();
+    const ipfsUrl = `https://ipfs.io/ipfs/${imageCid}`;
+
     return res.status(200).json({
       cid: metadata.ipnft,
-      url: `https://ipfs.io/ipfs/${metadata.data.image.href.split("/").pop()}`, // 💡 link IPFS direto pra imagem
+      url: ipfsUrl,
       message: "Upload feito com sucesso!",
     });
   } catch (err) {
@@ -61,7 +65,7 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
   }
 });
 
-// Inicializa o servidor na porta correta (Render-friendly!)
+// ✅ Corrigido: necessário pro Render aceitar acesso externo
 app.listen(port, "0.0.0.0", () => {
   console.log(`✅ Servidor ativo na porta ${port}`);
 });
