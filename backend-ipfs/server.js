@@ -11,22 +11,17 @@ app.use(cors());
 
 const port = process.env.PORT || 3000;
 
-// Configura o upload local temporário
 const upload = multer({ dest: "uploads/" });
 
-// Inicializa o client do NFT.storage com a chave da env
 const nftStorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
 
-// Middleware para parsing de formulários e JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rota de status
 app.get("/", (req, res) => {
   res.send("🧠 NeuroArte DAO API ativa e pronta pra subir arte pro IPFS 🎨🚀");
 });
 
-// Rota de upload IPFS
 app.post("/upload", upload.single("artwork"), async (req, res) => {
   try {
     if (!req.file) {
@@ -50,8 +45,8 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
 
     fs.unlinkSync(filePath); // limpa temporário
 
-    // ✅ Corrige o link direto da imagem no IPFS
-    const imageCid = metadata.data.image.href.split("/").pop();
+    // Corrigir o link da imagem IPFS
+    const imageCid = metadata.data.image.href.split("/")[2]; // pega o CID
     const ipfsUrl = `https://ipfs.io/ipfs/${imageCid}`;
 
     return res.status(200).json({
@@ -65,7 +60,7 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
   }
 });
 
-// ✅ Corrigido: necessário pro Render aceitar acesso externo
+// ✅ Corrigido para produção Render
 app.listen(port, "0.0.0.0", () => {
   console.log(`✅ Servidor ativo na porta ${port}`);
 });
