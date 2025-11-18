@@ -52,6 +52,8 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     const fileName = req.file.originalname;
 
     const metadata = await nftStorage.store({
+    const metadata = await nftStorage.store({...});
+ 
       name: req.body.title || "Obra Sem Título",
       description: req.body.description || "Enviada via portal NeuroArte DAO",
       image: new File([fileData], fileName, { type: req.file.mimetype }),
