@@ -50,10 +50,11 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     const ipfsUrl = `https://ipfs.io/ipfs/${imageCid}`;
 
     return res.status(200).json({
-      cid: metadata.ipnft,
-      url: ipfsUrl,
-      message: "Upload feito com sucesso!",
-    });
+  cid: metadata.ipnft || metadata.url, // compatível com versões antigas
+  url: metadata.data.image.href, // ou use `metadata.embed().image` se quiser JSON completo
+  message: "Upload feito com sucesso!",
+});
+
   } catch (err) {
     console.error("Erro no upload:", err);
     return res.status(500).send("Erro no upload: " + err.message);
