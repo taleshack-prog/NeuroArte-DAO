@@ -1,5 +1,13 @@
 const express = require("express");
 const multer = require("multer");
+const { fetch, Headers, Request, Response } = require('undici');
+globalThis.fetch = fetch;
+globalThis.Headers = Headers;
+globalThis.Request = Request;
+globalThis.Response = Response;
+
+const { NFTStorage, File } = require("nft.storage");
+
 const { NFTStorage, File } = require("nft.storage");
 const fs = require("fs");
 const path = require("path");
