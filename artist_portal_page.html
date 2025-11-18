@@ -107,7 +107,9 @@
     });
 
     const result = await response.json();
-   if (result && result.url && result.cid) {
+console.log("Resposta do servidor:", result); // <-- aqui
+if (result && result.url && result.cid) {
+
   ipfsInput.value = result.url;
   console.log("CID:", result.cid);
   console.log("URL da imagem IPFS:", result.url);
