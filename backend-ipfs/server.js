@@ -7,7 +7,14 @@ require("dotenv").config();
 
 const app = express();
 const cors = require("cors");
-app.use(cors());
+const corsOptions = {
+  origin: "https://taleshack-prog.github.io",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
+
 
 const port = process.env.PORT || 3000;
 
