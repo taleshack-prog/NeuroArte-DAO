@@ -72,7 +72,8 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
 
   } catch (err) {
     console.error("Erro no upload:", err);
-    return res.status(500).send("Erro no upload: " + err.message);
+    return res.status(500).json({ error: "Erro no upload", message: err.message });
+
   }
 });
 
