@@ -62,8 +62,6 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     fs.unlinkSync(filePath); // limpa temporário
 
     // Corrigir o link da imagem IPFS
-    const imageUrl = metadata.data.image; // já vem como "ipfs://..."
-const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
 
 const imageUrl = metadata.data.image; // "ipfs://..." string
 const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
