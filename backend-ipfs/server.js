@@ -74,12 +74,13 @@ const metadataCid = await nftStorage.storeBlob(metadataFile);
 
     // Corrigir o link da imagem IPFS
 
-const imageUrl = metadata.data.image; // "ipfs://..." string
-const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+const ipfsUrl = `https://ipfs.io/ipfs/${metadataCid}`;
+
 
 return res.status(200).json({
   cid: metadataCid,
-  url: `https://ipfs.io/ipfs/${cid}`,
+  url: ipfsUrl,
+
   message: "Upload feito com sucesso!",
 });
 
