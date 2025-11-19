@@ -5,95 +5,94 @@ globalThis.fetch = fetch;
 globalThis.Headers = Headers;
 globalThis.Request = Request;
 globalThis.Response = Response;
- 
 
 const { NFTStorage, File } = require("nft.storage");
 const fs = require("fs");
-const path = require("path");
 require("dotenv").config();
 
 const app = express();
+
+// CORS para permitir chamadas do frontend
 const cors = require("cors");
 const corsOptions = {
   origin: "https://taleshack-prog.github.io",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"],
 };
-
 app.use(cors(corsOptions));
 
-
+// Configuração
 const port = process.env.PORT || 3000;
-
 const upload = multer({ dest: "uploads/" });
-
 const nftStorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Endpoint raiz
 app.get("/", (req, res) => {
   res.send("🧠 NeuroArte DAO API ativa e pronta pra subir arte pro IPFS 🎨🚀");
 });
 
+// Endpoint de upload
 app.post("/upload", upload.single("artwork"), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).send("Nenhum arquivo enviado.");
-    }
+    if (!req.file) return res.status(400).send("Nenhum arquivo enviado.");
 
-    console.log("📩 Dados recebidos no upload:");
-    console.log("Title:", req.body.title);
-    console.log("Description:", req.body.description);
+    console.log("📩 Upload recebido:");
+    console.log("Título:", req.body.title);
+    console.log("Descrição:", req.body.description);
     console.log("Arquivo:", req.file);
 
+    // Lê arquivo temporário
     const filePath = req.file.path;
     const fileData = await fs.promises.readFile(filePath);
     const fileName = req.file.originalname;
 
-    const imageFile = new File([fileData], fileName, { type: req.file.mimetype });
-const cid = await nftStorage.storeBlob(imageFile);
+    // 1️⃣ Upload da imagem pro IPFS
+    const imageFile = new File([fileData], fileName, {
+      type: req.file.mimetype,
+    });
+    const imageCid = await nftStorage.storeBlob(imageFile);
 
-// Monta metadado JSON manualmente
-const metadataContent = {
-  name: req.body.title || "Obra Sem Título",
-  description: req.body.description || "Enviada via portal NeuroArte DAO",
-  image: `ipfs://${cid}`
-};
+    // 2️⃣ Gera metadata.json
+    const metadataContent = {
+      name: req.body.title || "Obra Sem Título",
+      description: req.body.description || "Enviada via portal NeuroArte DAO",
+      image: `ipfs://${imageCid}`,
+    };
 
-// Cria o metadata.json e faz upload
-const metadataFile = new File(
-  [JSON.stringify(metadataContent)],
-  "metadata.json",
-  { type: "application/json" }
-);
-const metadataCid = await nftStorage.storeBlob(metadataFile);
+    const metadataFile = new File(
+      [JSON.stringify(metadataContent)],
+      "metadata.json",
+      { type: "application/json" }
+    );
 
+    // 3️⃣ Upload do metadata.json
+    const metadataCid = await nftStorage.storeBlob(metadataFile);
 
-    fs.unlinkSync(filePath); // limpa temporário
+    // 4️⃣ Limpa arquivo temporário
+    fs.unlinkSync(filePath);
 
-    // Corrigir o link da imagem IPFS
+    // 5️⃣ Retorna link público
+    const publicUrl = `https://ipfs.io/ipfs/${metadataCid}`;
 
-const ipfsUrl = `https://ipfs.io/ipfs/${metadataCid}`;
+    return res.status(200).json({
+      cid: metadataCid,
+      url: publicUrl,
+      message: "Upload feito com sucesso!",
+    });
 
-
-return res.status(200).json({
-  cid: metadataCid,
-  url: ipfsUrl,
-
-  message: "Upload feito com sucesso!",
-});
-
-
-  
   } catch (err) {
-    console.error("Erro no upload:", err);
-    return res.status(500).json({ error: "Erro no upload", message: err.message });
-
+    console.error("❌ Erro no upload:", err);
+    return res.status(500).json({
+      error: "Erro no upload",
+      message: err.message,
+    });
   }
 });
 
-// ✅ Corrigido para produção Render
+// Inicia servidor (Render exige 0.0.0.0)
 app.listen(port, "0.0.0.0", () => {
-  console.log(`✅ Servidor ativo na porta ${port}`);
+  console.log(`✅ Servidor rodando na porta ${port}`);
 });
