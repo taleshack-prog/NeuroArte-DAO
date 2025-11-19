@@ -5,7 +5,7 @@ globalThis.fetch = fetch;
 globalThis.Headers = Headers;
 globalThis.Request = Request;
 globalThis.Response = Response;
-
+ 
 
 const { NFTStorage, File } = require("nft.storage");
 const fs = require("fs");
