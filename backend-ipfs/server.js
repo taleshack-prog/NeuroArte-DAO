@@ -62,14 +62,19 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     fs.unlinkSync(filePath); // limpa temporário
 
     // Corrigir o link da imagem IPFS
-    const imageCid = metadata.data.image.href.split("/")[2]; // pega o CID
-    const ipfsUrl = `https://ipfs.io/ipfs/${imageCid}`;
+    const imageUrl = metadata.data.image; // já vem como "ipfs://..."
+const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-    return res.status(200).json({
+const imageUrl = metadata.data.image; // "ipfs://..." string
+const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
+
+return res.status(200).json({
   cid: metadata.ipnft,
-  url: `https://ipfs.io/ipfs/${metadata.data.image.href.split("/")[2]}`,
+  url: ipfsUrl,
   message: "Upload feito com sucesso!",
 });
+
+   
 
 
   } catch (err) {
