@@ -1,13 +1,8 @@
 const express = require("express");
 const multer = require("multer");
-const { fetch, Headers, Request, Response } = require("undici");
-globalThis.fetch = fetch;
-globalThis.Headers = Headers;
-globalThis.Request = Request;
-globalThis.Response = Response;
-
-const { NFTStorage, File } = require("nft.storage");
 const fs = require("fs");
+const axios = require("axios");
+const FormData = require("form-data");
 require("dotenv").config();
 
 const app = express();
@@ -15,57 +10,70 @@ const app = express();
 // ==== CORS ====
 const cors = require("cors");
 app.use(cors({
-  origin: "https://taleshack-prog.github.io",
+  origin: "https://taleshack-prog.github.io", // frontend
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
 
 // ==== CONFIG ====
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000; // Render usa porta dinâmica
 const upload = multer({ dest: "uploads/" });
-const nftStorage = new NFTStorage({ token: process.env.NFT_STORAGE_KEY });
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // ==== ROOT ENDPOINT ====
 app.get("/", (req, res) => {
-  res.send("🧠 NeuroArte DAO API ativa e pronta pra subir arte pro IPFS 🎨🚀");
+  res.send("🧠 NeuroArte DAO API ativa usando Pinata IPFS 🎨🚀");
 });
 
-// ==== UPLOAD ENDPOINT ====
+// ==== UPLOAD VIA PINATA ====
 app.post("/upload", upload.single("artwork"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).send("Nenhum arquivo enviado.");
+      return res.status(400).json({ error: "Nenhum arquivo enviado." });
     }
 
     console.log("📄 Upload recebido:", req.file);
 
     const filePath = req.file.path;
-    const fileBuffer = await fs.promises.readFile(filePath);
+    const fileStream = fs.createReadStream(filePath);
 
-    // Convertendo para File (Web API)
-    const imageFile = new File([fileBuffer], req.file.originalname, {
-      type: req.file.mimetype
+    const formData = new FormData();
+    formData.append("file", fileStream, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype
     });
 
-    // ==== AQUI ESTÁ O MÉTODO CORRETO PARA BACKEND ====
-    const metadata = await nftStorage.store({
+    // --- Metadados (opcional, mas útil)
+    formData.append("pinataMetadata", JSON.stringify({
       name: req.body.title || "Obra Sem Título",
-      description: req.body.description || "Descrição ausente",
-      image: imageFile
-    });
+      keyvalues: {
+        description: req.body.description || "Sem descrição"
+      }
+    }));
 
-    console.log("🟢 Upload concluído:", metadata);
+    console.log("🔐 Usando JWT Pinata:", process.env.PINATA_JWT ? "OK" : "FALTANDO!");
 
-    // Apagar arquivo temporário
+    const response = await axios.post(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      formData,
+      {
+        maxBodyLength: Infinity,
+        headers: {
+          ...formData.getHeaders(),
+          Authorization: `Bearer ${process.env.PINATA_JWT}`
+        }
+      }
+    );
+
+    const cid = response.data.IpfsHash;
+    const publicUrl = `https://gateway.pinata.cloud/ipfs/${cid}`;
+
+    // Apaga arquivo temporário
     fs.unlinkSync(filePath);
 
-    const publicUrl = `https://ipfs.io/ipfs/${metadata.ipnft}`;
+    console.log("🟢 Upload concluído:", cid);
 
-    return res.status(200).json({
-      cid: metadata.ipnft,
+    return res.json({
+      cid,
       url: publicUrl,
       message: "Upload feito com sucesso!"
     });
