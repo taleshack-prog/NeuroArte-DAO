@@ -51,13 +51,24 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     const fileData = await fs.promises.readFile(filePath);
     const fileName = req.file.originalname;
 
-    const metadata = await nftStorage.store({
-  
- 
-      name: req.body.title || "Obra Sem Título",
-      description: req.body.description || "Enviada via portal NeuroArte DAO",
-      image: new File([fileData], fileName, { type: req.file.mimetype }),
-    });
+    const imageFile = new File([fileData], fileName, { type: req.file.mimetype });
+const cid = await nftStorage.storeBlob(imageFile);
+
+// Monta metadado JSON manualmente
+const metadataContent = {
+  name: req.body.title || "Obra Sem Título",
+  description: req.body.description || "Enviada via portal NeuroArte DAO",
+  image: `ipfs://${cid}`
+};
+
+// Cria o metadata.json e faz upload
+const metadataFile = new File(
+  [JSON.stringify(metadataContent)],
+  "metadata.json",
+  { type: "application/json" }
+);
+const metadataCid = await nftStorage.storeBlob(metadataFile);
+
 
     fs.unlinkSync(filePath); // limpa temporário
 
@@ -67,14 +78,13 @@ const imageUrl = metadata.data.image; // "ipfs://..." string
 const ipfsUrl = imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/");
 
 return res.status(200).json({
-  cid: metadata.ipnft,
-  url: ipfsUrl,
+  cid: metadataCid,
+  url: `https://ipfs.io/ipfs/${cid}`,
   message: "Upload feito com sucesso!",
 });
 
-   
 
-
+  
   } catch (err) {
     console.error("Erro no upload:", err);
     return res.status(500).json({ error: "Erro no upload", message: err.message });
