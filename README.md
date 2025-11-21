@@ -74,11 +74,12 @@ O modelo de emissão e distribuição do token $NEURO segue um blueprint públic
 **NeuroArte DAO — Whitepaper (Final EN)**  
 - **Versão:** Final 2025-10  
 - **Autores:** Tales Hack; Prof. Alexandre de Souza Fortis
-
 **Provas públicas**
-- **IPFS (DOCX):** `bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq`  
-  — Gateway: https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq
+- **IPFS (DOCX):** `bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq`
+  – Gateway: https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq
 - **SHA-256:** `73bf4d5b481a11b58032bc8b804b2e249d7bee41fe748cffb764f717d2885594`
+
+
 - **Registro on-chain (Base L2):**  
   Tx: `0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b`  
   Explorer: https://basescan.org/tx/0x91799367aafb43bda4479eb5b00e08b26c8ab6a74ab6aa0f0ff9c90d9c710d6b
