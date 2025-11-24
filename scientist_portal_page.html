@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal do Cientista — NeuroArte DAO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/web3Auth.js"></script>
   <style>
     body {
       background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 80%);
@@ -31,7 +32,7 @@
   </header>
 
   <div class="text-center mt-4">
-    <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">🔌 Conectar Wallet</button>
+    <button onclick="connectWallet()" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl">🔌 Conectar Wallet</button>
     <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
   </div>
 
@@ -117,23 +118,25 @@
 
     // ===== CONECTAR WALLET =====
     async function connectWallet() {
-      if (typeof window.ethereum !== "undefined") {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const wallet = accounts[0];
-          document.getElementById("walletStatus").textContent = `✅ Wallet conectada: ${wallet}`;
-          document.getElementById("scientistWalletInput").value = wallet;
-        } catch (error) {
-          document.getElementById("walletStatus").textContent = "❌ Conexão recusada.";
-        }
+      const auth = await authenticateWithWeb3();
+      
+      if (auth) {
+        document.getElementById("walletStatus").textContent = `✅ Autenticado: ${auth.wallet}`;
+        document.getElementById("scientistWalletInput").value = auth.wallet;
       } else {
-        document.getElementById("walletStatus").textContent = "⚠️ Instale a MetaMask para conectar.";
+        document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
       }
     }
 
     // ===== SUBMETER PESQUISA =====
     async function submitResearch(event) {
       event.preventDefault();
+
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado. Clique em "Conectar Wallet"');
+        return;
+      }
 
       const title = document.getElementById("titleInput").value;
       const area = document.getElementById("areaInput").value;
@@ -146,9 +149,8 @@
       try {
         statusMsg.textContent = "⏳ Enviando proposta...";
 
-        const response = await fetch(`${BACKEND_URL}/api/research/submit`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/research/submit`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             title,
             abstract,
@@ -211,13 +213,17 @@
 
     // ===== VOTAR EM PROPOSTA =====
     async function voteResearch(proposalId, vote) {
-      const wallet = prompt("Digite seu wallet ou nome:");
-      if (!wallet) return;
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+
+      const wallet = getUserWallet();
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/voting/vote`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             proposalId,
             proposalType: "research",
