@@ -10,21 +10,30 @@ const app = express();
 // ==== CORS ====
 const cors = require("cors");
 app.use(cors({
-  origin: "https://taleshack-prog.github.io", // frontend
+  origin: "https://taleshack-prog.github.io",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
 
+app.use(express.json());
+
 // ==== CONFIG ====
-const port = process.env.PORT || 10000; // Render usa porta dinâmica
+const port = process.env.PORT || 10000;
 const upload = multer({ dest: "uploads/" });
+
+// ==== ARMAZENAMENTO EM MEMÓRIA (depois migra para banco) ====
+const artProposals = [];
+const researchProposals = [];
+const votes = {};
 
 // ==== ROOT ENDPOINT ====
 app.get("/", (req, res) => {
   res.send("🧠 NeuroArte DAO API ativa usando Pinata IPFS 🎨🚀");
 });
 
-// ==== UPLOAD VIA PINATA ====
+// ============ ARTE ============
+
+// Upload de arte (já existia)
 app.post("/upload", upload.single("artwork"), async (req, res) => {
   try {
     if (!req.file) {
@@ -42,7 +51,6 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
       contentType: req.file.mimetype
     });
 
-    // --- Metadados (opcional, mas útil)
     formData.append("pinataMetadata", JSON.stringify({
       name: req.body.title || "Obra Sem Título",
       keyvalues: {
@@ -67,7 +75,6 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
     const cid = response.data.IpfsHash;
     const publicUrl = `https://gateway.pinata.cloud/ipfs/${cid}`;
 
-    // Apaga arquivo temporário
     fs.unlinkSync(filePath);
 
     console.log("🟢 Upload concluído:", cid);
@@ -85,6 +92,164 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
       message: err.message
     });
   }
+});
+
+// Submeter obra de arte
+app.post("/api/art/submit", (req, res) => {
+  try {
+    const { title, description, ipfsHash, artistWallet, editions } = req.body;
+
+    if (!title || !description || !ipfsHash || !artistWallet) {
+      return res.status(400).json({ error: "Campos obrigatórios faltando" });
+    }
+
+    const proposal = {
+      id: artProposals.length + 1,
+      type: "art",
+      title,
+      description,
+      ipfsHash,
+      artistWallet,
+      editions,
+      status: "pending_curation",
+      submittedAt: new Date(),
+      votes: { for: 0, against: 0 }
+    };
+
+    artProposals.push(proposal);
+
+    console.log(`✅ Arte submetida: ${title} (ID: ${proposal.id})`);
+
+    res.json({
+      success: true,
+      proposalId: proposal.id,
+      status: "pending_curation",
+      message: "Arte enviada para curadoria da DAO"
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao submeter arte" });
+  }
+});
+
+// Listar propostas de arte
+app.get("/api/art/proposals", (req, res) => {
+  const pending = artProposals.filter(p => p.status === "pending_curation");
+  res.json({ proposals: pending, total: pending.length });
+});
+
+// ============ PESQUISA ============
+
+// Submeter proposta de pesquisa
+app.post("/api/research/submit", (req, res) => {
+  try {
+    const { title, abstract, picoJson, requestedFunding, scientistWallet } = req.body;
+
+    if (!title || !abstract || !scientistWallet) {
+      return res.status(400).json({ error: "Campos obrigatórios faltando" });
+    }
+
+    const proposal = {
+      id: researchProposals.length + 1,
+      type: "research",
+      title,
+      abstract,
+      picoJson: picoJson || {},
+      requestedFunding,
+      scientistWallet,
+      status: "pending_review",
+      submittedAt: new Date(),
+      votes: { for: 0, against: 0 }
+    };
+
+    researchProposals.push(proposal);
+
+    console.log(`✅ Pesquisa submetida: ${title} (ID: ${proposal.id})`);
+
+    res.json({
+      success: true,
+      proposalId: proposal.id,
+      status: "pending_review",
+      message: "Proposta de pesquisa enviada para avaliação"
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao submeter pesquisa" });
+  }
+});
+
+// Listar propostas de pesquisa
+app.get("/api/research/proposals", (req, res) => {
+  const pending = researchProposals.filter(p => p.status === "pending_review");
+  res.json({ proposals: pending, total: pending.length });
+});
+
+// ============ VOTAÇÃO ============
+
+// Registrar voto
+app.post("/api/voting/vote", (req, res) => {
+  try {
+    const { proposalId, proposalType, voterWallet, vote } = req.body;
+
+    if (!proposalId || !proposalType || !voterWallet || !vote) {
+      return res.status(400).json({ error: "Campos obrigatórios faltando" });
+    }
+
+    if (!["for", "against"].includes(vote)) {
+      return res.status(400).json({ error: 'Vote deve ser "for" ou "against"' });
+    }
+
+    const voteKey = `${proposalType}_${proposalId}_${voterWallet}`;
+
+    if (votes[voteKey]) {
+      return res.status(400).json({ error: "Você já votou nesta proposta" });
+    }
+
+    votes[voteKey] = { vote, timestamp: new Date() };
+
+    const proposals = proposalType === "art" ? artProposals : researchProposals;
+    const proposal = proposals.find(p => p.id === proposalId);
+
+    if (proposal) {
+      if (vote === "for") {
+        proposal.votes.for++;
+      } else {
+        proposal.votes.against++;
+      }
+    }
+
+    console.log(`✅ Voto registrado: ${proposalType} #${proposalId} - ${vote}`);
+
+    res.json({
+      success: true,
+      message: "Voto registrado com sucesso",
+      votes: proposal.votes
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao votar" });
+  }
+});
+
+// Ver resultados da votação
+app.get("/api/voting/results/:proposalType/:proposalId", (req, res) => {
+  const { proposalType, proposalId } = req.params;
+  const proposals = proposalType === "art" ? artProposals : researchProposals;
+  const proposal = proposals.find(p => p.id === parseInt(proposalId));
+
+  if (!proposal) {
+    return res.status(404).json({ error: "Proposta não encontrada" });
+  }
+
+  res.json({
+    proposalId: proposal.id,
+    title: proposal.title,
+    votes: proposal.votes,
+    total: proposal.votes.for + proposal.votes.against,
+    approved: proposal.votes.for > proposal.votes.against
+  });
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ status: "NeuroArt DAO Backend is running ✅" });
 });
 
 // ==== START SERVER ====
