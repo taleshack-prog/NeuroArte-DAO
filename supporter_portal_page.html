@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal do Apoiador – NeuroArte DAO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/web3Auth.js"></script>
   <style>
     body {
       background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
@@ -97,16 +98,15 @@
 
     // ===== CONECTAR WALLET =====
     async function connectWallet() {
-      if (typeof window.ethereum !== "undefined") {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          currentWallet = accounts[0];
-          document.getElementById("walletStatus").textContent = `✅ Conectada: ${currentWallet}`;
-        } catch (error) {
-          document.getElementById("walletStatus").textContent = "❌ Conexão recusada.";
-        }
+      const auth = await authenticateWithWeb3();
+      
+      if (auth) {
+        currentWallet = auth.wallet;
+        document.getElementById("walletStatus").textContent = `✅ Conectada: ${auth.wallet}`;
+        loadArtProposals();
+        loadResearchProposals();
       } else {
-        document.getElementById("walletStatus").textContent = "⚠️ Instale a MetaMask para conectar.";
+        document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
       }
     }
 
@@ -186,13 +186,17 @@
 
     // ===== VOTAR EM ARTE =====
     async function voteArt(proposalId, vote) {
-      const wallet = currentWallet || prompt("Digite seu wallet ou nome:");
-      if (!wallet) return;
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+
+      const wallet = getUserWallet();
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/voting/vote`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             proposalId,
             proposalType: "art",
@@ -216,13 +220,17 @@
 
     // ===== VOTAR EM PESQUISA =====
     async function voteResearch(proposalId, vote) {
-      const wallet = currentWallet || prompt("Digite seu wallet ou nome:");
-      if (!wallet) return;
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+
+      const wallet = getUserWallet();
 
       try {
-        const response = await fetch(`${BACKEND_URL}/api/voting/vote`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             proposalId,
             proposalType: "research",
