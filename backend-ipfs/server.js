@@ -27,7 +27,7 @@ const votes = {};
  * POST /api/auth/challenge
  * Gera um desafio que o usuário precisa assinar
  */
-app.post('/api/auth/challenge', (req, res) => {
+app.post("/api/art/submit", authMiddleware, (req, res) => {
   const { wallet } = req.body;
 
   if (!wallet) {
