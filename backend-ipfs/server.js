@@ -4,7 +4,7 @@ const fs = require("fs");
 const axios = require("axios");
 const FormData = require("form-data");
 require("dotenv").config();
-
+const { generateChallenge, verifySignatureAndCreateJWT, authMiddleware } = require('./auth');
 const app = express();
 
 // ==== CORS ====
@@ -16,7 +16,58 @@ app.use(cors({
 }));
 
 app.use(express.json());
+// ============ ARMAZENAMENTO EM MEMÓRIA ============
+const artProposals = [];
+const researchProposals = [];
+const votes = {};
 
+// ============ AUTENTICAÇÃO ============
+
+/**
+ * POST /api/auth/challenge
+ * Gera um desafio que o usuário precisa assinar
+ */
+app.post('/api/auth/challenge', (req, res) => {
+  const { wallet } = req.body;
+
+  if (!wallet) {
+    return res.status(400).json({ error: 'Wallet não fornecida' });
+  }
+
+  const { message, timestamp } = generateChallenge(wallet);
+
+  res.json({
+    message,
+    timestamp
+  });
+});
+
+/**
+ * POST /api/auth/verify
+ * Verifica a assinatura e cria um JWT
+ */
+app.post('/api/auth/verify', (req, res) => {
+  const { wallet, message, signature } = req.body;
+
+  if (!wallet || !message || !signature) {
+    return res.status(400).json({ error: 'Dados incompletos' });
+  }
+
+  const result = verifySignatureAndCreateJWT(wallet, message, signature);
+
+  if (result.success) {
+    res.json({
+      success: true,
+      token: result.token,
+      wallet
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      error: result.error
+    });
+  }
+});
 // ==== CONFIG ====
 const port = process.env.PORT || 10000;
 const upload = multer({ dest: "uploads/" });
