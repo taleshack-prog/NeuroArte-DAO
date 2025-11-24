@@ -23,43 +23,31 @@
     }
   </style>
 </head>
-<script>
-  async function connectWallet() {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const wallet = accounts[0];
-        document.getElementById("walletStatus").textContent = `Wallet conectada: ${wallet}`;
-      } catch (error) {
-        document.getElementById("walletStatus").textContent = "Conexão recusada.";
-      }
-    } else {
-      document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
-    }
-  }
-</script>
 
 <body class="text-white">
   <header class="text-center mt-10">
     <h1 class="text-4xl font-bold">🔬 Portal do Cientista</h1>
     <p class="text-gray-300 mt-2">Pesquisa Aberta, Transparente e Descentralizada</p>
   </header>
-<div class="mt-4">
-  <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">🔌 Conectar Wallet</button>
-  <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
-</div>
+
+  <div class="text-center mt-4">
+    <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">🔌 Conectar Wallet</button>
+    <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
+  </div>
 
   <!-- Seção: Submissão de Propostas -->
   <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-4">🧪 Submeta sua Proposta de Pesquisa</h2>
-    <form id="proposalForm" class="space-y-4">
+    <form id="proposalForm" class="space-y-4" onsubmit="submitResearch(event)">
+      
       <div>
         <label class="block text-sm mb-1">Título da Proposta</label>
-        <input type="text" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" required />
+        <input type="text" id="titleInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" required />
       </div>
+
       <div>
         <label class="block text-sm mb-1">Área Científica</label>
-        <select class="w-full p-2 rounded bg-gray-800 border border-purple-700 focus:outline-none">
+        <select id="areaInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none">
           <option>Neurociência</option>
           <option>Psicologia</option>
           <option>Educação</option>
@@ -67,47 +55,35 @@
           <option>Interdisciplinar</option>
         </select>
       </div>
+
       <div>
         <label class="block text-sm mb-1">Resumo (Abstract)</label>
-        <textarea class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" rows="4" placeholder="Descreva brevemente sua proposta..."></textarea>
+        <textarea id="abstractInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" rows="4" placeholder="Descreva brevemente sua proposta..." required></textarea>
       </div>
+
       <div>
-        <label class="block text-sm mb-1">Anexar Documento (PDF, protocolo, etc.)</label>
-        <input type="file" class="w-full text-sm text-gray-300 border border-purple-700 rounded cursor-pointer bg-gray-800" />
+        <label class="block text-sm mb-1">Financiamento Solicitado (em $NEURO)</label>
+        <input type="number" id="fundingInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" placeholder="Ex: 25000" required />
       </div>
+
       <div>
-        <label class="block text-sm mb-1">Identificação (Nome / ORCID / Wallet opcional)</label>
-        <input type="text" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" />
+        <label class="block text-sm mb-1">Seu Wallet (ou Nome)</label>
+        <input type="text" id="scientistWalletInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" required />
       </div>
 
       <button type="submit" class="w-full mt-4 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg transition">
         Submeter para Revisão Comunitária 🧠
       </button>
     </form>
+
+    <p id="statusMessage" class="text-sm text-gray-400 mt-2"></p>
   </section>
 
   <!-- Seção: Pesquisas em Andamento -->
   <section class="max-w-5xl mx-auto mt-16">
     <h2 class="text-2xl font-semibold mb-6 text-center">🧠 Pesquisas em Andamento</h2>
-    <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-      <div class="bg-gray-900 bg-opacity-70 p-4 rounded-xl border border-purple-800 shadow-md">
-        <h3 class="font-semibold text-lg">Neurofeedback e Processos Criativos</h3>
-        <p class="text-gray-400 text-sm mb-1">Responsável: Dr. A. Silva</p>
-        <p class="text-purple-400 text-sm mb-2">Status: Em andamento</p>
-        <p class="text-gray-300 text-sm">Explora os efeitos do neurofeedback em fluxos criativos e sinestesia artística.</p>
-      </div>
-      <div class="bg-gray-900 bg-opacity-70 p-4 rounded-xl border border-purple-800 shadow-md">
-        <h3 class="font-semibold text-lg">Impacto da Neurodivergência na Educação</h3>
-        <p class="text-gray-400 text-sm mb-1">Responsável: Equipe NeuroEdu</p>
-        <p class="text-purple-400 text-sm mb-2">Status: Em revisão</p>
-        <p class="text-gray-300 text-sm">Análise qualitativa da experiência educacional de estudantes neurodivergentes.</p>
-      </div>
-      <div class="bg-gray-900 bg-opacity-70 p-4 rounded-xl border border-purple-800 shadow-md">
-        <h3 class="font-semibold text-lg">Arte Generativa e Cognição</h3>
-        <p class="text-gray-400 text-sm mb-1">Responsável: M. Duarte</p>
-        <p class="text-purple-400 text-sm mb-2">Status: Concluída</p>
-        <p class="text-gray-300 text-sm">Estudo sobre processos cognitivos envolvidos na criação de arte via IA generativa.</p>
-      </div>
+    <div id="proposalsList" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+      <!-- Carregado dinamicamente via JavaScript -->
     </div>
   </section>
 
@@ -117,26 +93,8 @@
     <p class="text-gray-300 text-center mb-6">
       Monitoramento em tempo real do uso de recursos da DAO em pesquisas.
     </p>
-
-    <div class="space-y-4">
-      <div>
-        <p>🧩 Neurofeedback e Criatividade — 12.000 / 30.000 $NEURO (40%)</p>
-        <div class="w-full bg-gray-800 rounded-full h-3 mt-1">
-          <div class="bg-purple-600 h-3 rounded-full" style="width:40%"></div>
-        </div>
-      </div>
-      <div>
-        <p>🧩 Neurodivergência na Educação — 8.000 / 25.000 $NEURO (32%)</p>
-        <div class="w-full bg-gray-800 rounded-full h-3 mt-1">
-          <div class="bg-purple-600 h-3 rounded-full" style="width:32%"></div>
-        </div>
-      </div>
-      <div>
-        <p>🧩 Arte Generativa e Cognição — 30.000 / 30.000 $NEURO (100%) ✅</p>
-        <div class="w-full bg-gray-800 rounded-full h-3 mt-1">
-          <div class="bg-purple-600 h-3 rounded-full" style="width:100%"></div>
-        </div>
-      </div>
+    <div id="fundingList" class="space-y-4">
+      <!-- Carregado dinamicamente -->
     </div>
   </section>
 
@@ -154,7 +112,138 @@
 
   <!-- Scripts -->
   <script>
-    // Fade-in do footer ao rolar a página
+    // URL do backend
+    const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+
+    // ===== CONECTAR WALLET =====
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const wallet = accounts[0];
+          document.getElementById("walletStatus").textContent = `✅ Wallet conectada: ${wallet}`;
+          document.getElementById("scientistWalletInput").value = wallet;
+        } catch (error) {
+          document.getElementById("walletStatus").textContent = "❌ Conexão recusada.";
+        }
+      } else {
+        document.getElementById("walletStatus").textContent = "⚠️ Instale a MetaMask para conectar.";
+      }
+    }
+
+    // ===== SUBMETER PESQUISA =====
+    async function submitResearch(event) {
+      event.preventDefault();
+
+      const title = document.getElementById("titleInput").value;
+      const area = document.getElementById("areaInput").value;
+      const abstract = document.getElementById("abstractInput").value;
+      const funding = document.getElementById("fundingInput").value;
+      const wallet = document.getElementById("scientistWalletInput").value;
+
+      const statusMsg = document.getElementById("statusMessage");
+
+      try {
+        statusMsg.textContent = "⏳ Enviando proposta...";
+
+        const response = await fetch(`${BACKEND_URL}/api/research/submit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title,
+            abstract,
+            picoJson: { area },
+            requestedFunding: parseInt(funding),
+            scientistWallet: wallet
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a revisão comunitária.`;
+          document.getElementById("proposalForm").reset();
+          loadProposals(); // Recarregar lista
+        } else {
+          statusMsg.textContent = `❌ Erro: ${result.error}`;
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+        statusMsg.textContent = "❌ Erro ao enviar proposta. Verifique a conexão.";
+      }
+    }
+
+    // ===== CARREGAR PROPOSTAS =====
+    async function loadProposals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/research/proposals`);
+        const data = await response.json();
+
+        const container = document.getElementById("proposalsList");
+        container.innerHTML = "";
+
+        if (data.proposals.length === 0) {
+          container.innerHTML = '<p class="text-gray-400 col-span-full text-center">Nenhuma proposta pendente.</p>';
+          return;
+        }
+
+        data.proposals.forEach(proposal => {
+          const card = document.createElement("div");
+          card.className = "bg-gray-900 bg-opacity-70 p-4 rounded-xl border border-purple-800 shadow-md";
+          card.innerHTML = `
+            <h3 class="font-semibold text-lg">${proposal.title}</h3>
+            <p class="text-gray-400 text-sm mb-1">Cientista: ${proposal.scientistWallet}</p>
+            <p class="text-purple-400 text-sm mb-2">Status: Aguardando Votação</p>
+            <p class="text-gray-300 text-sm mb-2">${proposal.abstract.substring(0, 100)}...</p>
+            <p class="text-sm text-yellow-400">Financiamento: $${proposal.requestedFunding} NEURO</p>
+            <div class="mt-3 flex gap-2">
+              <button onclick="voteResearch(${proposal.id}, 'for')" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">👍 Apoiar</button>
+              <button onclick="voteResearch(${proposal.id}, 'against')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">👎 Rejeitar</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Votos: ✅ ${proposal.votes.for} | ❌ ${proposal.votes.against}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar propostas:", error);
+      }
+    }
+
+    // ===== VOTAR EM PROPOSTA =====
+    async function voteResearch(proposalId, vote) {
+      const wallet = prompt("Digite seu wallet ou nome:");
+      if (!wallet) return;
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/voting/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            proposalId,
+            proposalType: "research",
+            voterWallet: wallet,
+            vote
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert("✅ Voto registrado!");
+          loadProposals();
+        } else {
+          alert(`❌ ${result.error}`);
+        }
+      } catch (error) {
+        alert("Erro ao votar");
+      }
+    }
+
+    // ===== CARREGAR DADOS INICIAIS =====
+    loadProposals();
+    setInterval(loadProposals, 10000); // Atualizar a cada 10 segundos
+
+    // ===== FOOTER DINÂMICO =====
     window.addEventListener('scroll', () => {
       const footer = document.getElementById('daoFooter');
       const scrollY = window.scrollY;
@@ -167,7 +256,6 @@
       }
     });
 
-    // Mensagens dinâmicas no rodapé
     const messages = [
       "Feito com 🧠 & 💜 pela comunidade NeuroArte DAO.",
       "Ciência aberta, transparente e descentralizada.",
@@ -177,7 +265,7 @@
     let index = 0;
     setInterval(() => {
       index = (index + 1) % messages.length;
-      document.getElementById('footerText').textContent = messages[index];
+      document.getElementById("footerText").textContent = messages[index];
     }, 6000);
   </script>
 </body>
