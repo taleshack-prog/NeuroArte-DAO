@@ -5,6 +5,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 require("dotenv").config();
 const { generateChallenge, verifySignatureAndCreateJWT, authMiddleware } = require('./auth');
+
 const app = express();
 
 // ==== CORS ====
@@ -16,10 +17,20 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
 // ============ ARMAZENAMENTO EM MEMÓRIA ============
 const artProposals = [];
 const researchProposals = [];
 const votes = {};
+
+// ==== CONFIG ====
+const port = process.env.PORT || 10000;
+const upload = multer({ dest: "uploads/" });
+
+// ==== ROOT ENDPOINT ====
+app.get("/", (req, res) => {
+  res.send("🧠 NeuroArte DAO API ativa usando Pinata IPFS 🎨🚀");
+});
 
 // ============ AUTENTICAÇÃO ============
 
@@ -27,7 +38,7 @@ const votes = {};
  * POST /api/auth/challenge
  * Gera um desafio que o usuário precisa assinar
  */
-app.post("/api/art/submit", authMiddleware, (req, res) => {
+app.post('/api/auth/challenge', (req, res) => {
   const { wallet } = req.body;
 
   if (!wallet) {
@@ -68,23 +79,9 @@ app.post('/api/auth/verify', (req, res) => {
     });
   }
 });
-// ==== CONFIG ====
-const port = process.env.PORT || 10000;
-const upload = multer({ dest: "uploads/" });
 
-// ==== ARMAZENAMENTO EM MEMÓRIA (depois migra para banco) ====
-const artProposals = [];
-const researchProposals = [];
-const votes = {};
+// ============ UPLOAD PINATA ============
 
-// ==== ROOT ENDPOINT ====
-app.get("/", (req, res) => {
-  res.send("🧠 NeuroArte DAO API ativa usando Pinata IPFS 🎨🚀");
-});
-
-// ============ ARTE ============
-
-// Upload de arte (já existia)
 app.post("/upload", upload.single("artwork"), async (req, res) => {
   try {
     if (!req.file) {
@@ -145,8 +142,10 @@ app.post("/upload", upload.single("artwork"), async (req, res) => {
   }
 });
 
-// Submeter obra de arte
-app.post("/api/art/submit", (req, res) => {
+// ============ ARTE ============
+
+// Submeter obra de arte (PROTEGIDO)
+app.post("/api/art/submit", authMiddleware, (req, res) => {
   try {
     const { title, description, ipfsHash, artistWallet, editions } = req.body;
 
@@ -190,8 +189,8 @@ app.get("/api/art/proposals", (req, res) => {
 
 // ============ PESQUISA ============
 
-// Submeter proposta de pesquisa
-app.post("/api/research/submit", (req, res) => {
+// Submeter proposta de pesquisa (PROTEGIDO)
+app.post("/api/research/submit", authMiddleware, (req, res) => {
   try {
     const { title, abstract, picoJson, requestedFunding, scientistWallet } = req.body;
 
@@ -235,8 +234,8 @@ app.get("/api/research/proposals", (req, res) => {
 
 // ============ VOTAÇÃO ============
 
-// Registrar voto
-app.post("/api/voting/vote", (req, res) => {
+// Registrar voto (PROTEGIDO)
+app.post("/api/voting/vote", authMiddleware, (req, res) => {
   try {
     const { proposalId, proposalType, voterWallet, vote } = req.body;
 
