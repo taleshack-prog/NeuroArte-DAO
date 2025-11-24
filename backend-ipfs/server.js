@@ -13,7 +13,7 @@ const cors = require("cors");
 app.use(cors({
   origin: "https://taleshack-prog.github.io",
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type"]
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
@@ -82,7 +82,7 @@ app.post('/api/auth/verify', (req, res) => {
 
 // ============ UPLOAD PINATA ============
 
-app.post("/upload", upload.single("artwork"), async (req, res) => {
+app.post("/upload", authMiddleware, upload.single("artwork"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Nenhum arquivo enviado." });
