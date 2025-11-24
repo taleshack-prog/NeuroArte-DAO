@@ -90,13 +90,31 @@
     }
 
     async function uploadArt() {
+      // VERIFICAR AUTENTICAÇÃO PRIMEIRO
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para fazer upload. Clique em "Conectar Wallet"');
+        return;
+      }
+
       const fileInput = document.getElementById('artFile');
       const titleInput = document.getElementById('titleInput');
       const descriptionInput = document.getElementById('descriptionInput');
       const ipfsInput = document.getElementById('ipfsLink');
 
       if (!fileInput.files.length) {
-        alert('Escolha um arquivo JPEG primeiro!');
+        alert('❌ Escolha um arquivo JPEG primeiro!');
+        return;
+      }
+
+      // VERIFICAR SE OS CAMPOS ESTÃO PREENCHIDOS
+      if (!titleInput.value.trim()) {
+        alert('❌ Preencha o título da obra');
+        return;
+      }
+
+      if (!descriptionInput.value.trim()) {
+        alert('❌ Preencha a descrição da obra');
         return;
       }
 
@@ -137,14 +155,29 @@
 
       const title = document.getElementById('titleInput').value;
       const description = document.getElementById('descriptionInput').value;
-      const ipfsHash = document.getElementById('ipfsLink').value.split('/ipfs/')[1];
+      const ipfsLink = document.getElementById('ipfsLink').value;
       const artistWallet = document.getElementById('walletInput').value;
       const editions = document.getElementById('editionsInput').value;
       const statusMsg = document.getElementById('submitStatus');
 
+      // VALIDAR SE IPFS FOI GERADO
+      if (!ipfsLink.trim()) {
+        alert('❌ Você precisa fazer upload da arte primeiro (clique em "🗕️ Enviar Arte")');
+        return;
+      }
+
+      // VALIDAR SE TODOS OS CAMPOS ESTÃO PREENCHIDOS
+      if (!title.trim() || !description.trim() || !artistWallet.trim() || !editions) {
+        alert('❌ Preencha todos os campos obrigatórios');
+        return;
+      }
+
       statusMsg.textContent = '⏳ Enviando proposta...';
 
       try {
+        // Extrair o hash IPFS do link
+        const ipfsHash = ipfsLink.includes('/ipfs/') ? ipfsLink.split('/ipfs/')[1] : ipfsLink;
+
         const response = await authenticatedFetch(`${BACKEND_URL}/api/art/submit`, {
           method: 'POST',
           body: JSON.stringify({
@@ -162,6 +195,7 @@
           statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a curadoria.`;
           document.getElementById('uploadForm').reset();
           document.getElementById('ipfsLink').value = '';
+          document.getElementById('submitButton').disabled = true;
         } else {
           statusMsg.textContent = `❌ Erro: ${result.error}`;
         }
