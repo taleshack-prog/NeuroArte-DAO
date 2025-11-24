@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal do Artista – NeuroArte DAO</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/web3Auth.js"></script>
   <style>
     body {
       padding-bottom: 100px;
@@ -36,24 +37,25 @@
 
   <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
     <h2 class="text-2xl font-semibold mb-4">🎓 Submeter Obra para Mintagem</h2>
-    <form id="uploadForm" class="space-y-4" enctype="multipart/form-data" onsubmit="event.preventDefault();">
-      <input type="text" id="titleInput" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+    <form id="uploadForm" class="space-y-4" enctype="multipart/form-data" onsubmit="submitArt(event)">
+      <input type="text" id="titleInput" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
 
-      <textarea id="descriptionInput" placeholder="Descrição da Obra" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required></textarea>
+      <textarea id="descriptionInput" placeholder="Descrição da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required></textarea>
 
-      <input type="file" id="artFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+      <input type="file" id="artFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
 
-      <button type="button" onclick="uploadArt()" class="bg-purple-700 px-4 py-2 rounded-xl">🗕️ Enviar Arte</button>
+      <button type="button" onclick="uploadArt()" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl">🗕️ Enviar Arte</button>
 
-      <input type="text" id="ipfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 border border-purple-700" readonly required>
+      <input type="text" id="ipfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 text-white border border-purple-700" readonly required>
 
-      <input type="number" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 border border-purple-700" min="1" required>
+      <input type="number" id="editionsInput" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" min="1" required>
 
-      <input type="text" placeholder="Wallet do Artista (0x...)" id="walletInput" class="w-full p-2 rounded bg-gray-800 border border-purple-700" required>
+      <input type="text" placeholder="Wallet do Artista (0x...)" id="walletInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
 
-      <button type="submit" id="submitButton" class="bg-purple-700 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
+      <button type="submit" id="submitButton" class="w-full bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
     </form>
 
+    <p id="submitStatus" class="text-sm text-gray-400 mt-2"></p>
     <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
   </section>
 
@@ -73,18 +75,17 @@
   </footer>
 
   <script>
+    const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+
     async function connectWallet() {
-      if (typeof window.ethereum !== "undefined") {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const wallet = accounts[0];
-          document.getElementById("walletStatus").textContent = `Wallet conectada: ${wallet}`;
-          document.getElementById("walletInput").value = wallet;
-        } catch (error) {
-          document.getElementById("walletStatus").textContent = "Conexão recusada.";
-        }
+      const auth = await authenticateWithWeb3();
+      
+      if (auth) {
+        document.getElementById("walletStatus").textContent = `✅ Autenticado: ${auth.wallet}`;
+        document.getElementById("walletInput").value = auth.wallet;
+        document.getElementById("submitButton").disabled = false;
       } else {
-        document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
+        document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
       }
     }
 
@@ -93,7 +94,6 @@
       const titleInput = document.getElementById('titleInput');
       const descriptionInput = document.getElementById('descriptionInput');
       const ipfsInput = document.getElementById('ipfsLink');
-      const submitButton = document.getElementById('submitButton');
 
       if (!fileInput.files.length) {
         alert('Escolha um arquivo JPEG primeiro!');
@@ -106,7 +106,7 @@
       formData.append('description', descriptionInput.value);
 
       try {
-        const response = await fetch('https://neuroarte-dao.onrender.com/upload', {
+        const response = await fetch(`${BACKEND_URL}/upload`, {
           method: 'POST',
           body: formData
         });
@@ -116,14 +116,58 @@
 
         if (result && result.url && result.cid) {
           ipfsInput.value = result.url;
-          alert('Imagem enviada com sucesso! Link IPFS gerado.');
-          submitButton.disabled = false;
+          alert('✅ Imagem enviada com sucesso! Link IPFS gerado.');
         } else {
           throw new Error('Resposta inesperada do servidor: ' + JSON.stringify(result));
         }
       } catch (error) {
         console.error('Erro no upload:', error);
-        alert('Falha ao enviar a imagem pro IPFS.');
+        alert('❌ Falha ao enviar a imagem pro IPFS.');
+      }
+    }
+
+    async function submitArt(event) {
+      event.preventDefault();
+
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado. Clique em "Conectar Wallet"');
+        return;
+      }
+
+      const title = document.getElementById('titleInput').value;
+      const description = document.getElementById('descriptionInput').value;
+      const ipfsHash = document.getElementById('ipfsLink').value.split('/ipfs/')[1];
+      const artistWallet = document.getElementById('walletInput').value;
+      const editions = document.getElementById('editionsInput').value;
+      const statusMsg = document.getElementById('submitStatus');
+
+      statusMsg.textContent = '⏳ Enviando proposta...';
+
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/art/submit`, {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            description,
+            ipfsHash,
+            artistWallet,
+            editions: parseInt(editions)
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a curadoria.`;
+          document.getElementById('uploadForm').reset();
+          document.getElementById('ipfsLink').value = '';
+        } else {
+          statusMsg.textContent = `❌ Erro: ${result.error}`;
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        statusMsg.textContent = '❌ Erro ao enviar proposta. Verifique a conexão.';
       }
     }
 
