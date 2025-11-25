@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal do Artista – NeuroArte DAO</title>
- <script src="frontend/js/web3Auth.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  
+  <script src="frontend/js/web3Auth.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
     body {
       padding-bottom: 100px;
       background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
@@ -31,7 +30,7 @@
     <h1 class="text-4xl font-bold">🌈 Portal do Artista</h1>
     <p class="text-gray-300 mt-2">Submeta sua arte e contribua com a galeria da NeuroArte DAO.</p>
     <div class="mt-4">
-      <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">✨ Conectar Wallet</button>
+      <button id="connectBtn" onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">✨ Conectar Wallet</button>
     </div>
     <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
   </header>
@@ -85,13 +84,17 @@
         document.getElementById("walletStatus").textContent = `✅ Autenticado: ${auth.wallet}`;
         document.getElementById("walletInput").value = auth.wallet;
         document.getElementById("submitButton").disabled = false;
+        
+        const connectBtn = document.getElementById("connectBtn");
+        if (connectBtn) {
+          connectBtn.style.display = 'none';
+        }
       } else {
         document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
       }
     }
 
     async function uploadArt() {
-      // VERIFICAR AUTENTICAÇÃO PRIMEIRO
       const token = getAuthToken();
       if (!token) {
         alert('❌ Você precisa estar autenticado para fazer upload. Clique em "Conectar Wallet"');
@@ -108,7 +111,6 @@
         return;
       }
 
-      // VERIFICAR SE OS CAMPOS ESTÃO PREENCHIDOS
       if (!titleInput.value.trim()) {
         alert('❌ Preencha o título da obra');
         return;
@@ -161,13 +163,11 @@
       const editions = document.getElementById('editionsInput').value;
       const statusMsg = document.getElementById('submitStatus');
 
-      // VALIDAR SE IPFS FOI GERADO
       if (!ipfsLink.trim()) {
         alert('❌ Você precisa fazer upload da arte primeiro (clique em "🗕️ Enviar Arte")');
         return;
       }
 
-      // VALIDAR SE TODOS OS CAMPOS ESTÃO PREENCHIDOS
       if (!title.trim() || !description.trim() || !artistWallet.trim() || !editions) {
         alert('❌ Preencha todos os campos obrigatórios');
         return;
@@ -176,7 +176,6 @@
       statusMsg.textContent = '⏳ Enviando proposta...';
 
       try {
-        // Extrair o hash IPFS do link
         const ipfsHash = ipfsLink.includes('/ipfs/') ? ipfsLink.split('/ipfs/')[1] : ipfsLink;
 
         const response = await authenticatedFetch(`${BACKEND_URL}/api/art/submit`, {
