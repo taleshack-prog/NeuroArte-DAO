@@ -99,3 +99,11 @@ async function authenticatedFetch(url, options = {}) {
     headers
   });
 }
+async function connectWallet() {
+  const result = await authenticateWithWeb3();
+  
+  if (result) {
+    document.getElementById('walletStatus').innerHTML = `✅ Autenticado: ${result.wallet}`;
+    document.getElementById('connectBtn').style.display = 'none';
+  }
+}
