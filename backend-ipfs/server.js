@@ -14,6 +14,7 @@ app.use(cors({
   origin: "https://taleshack-prog.github.io",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
+   credentials: true 
 }));
 
 app.use(express.json());
