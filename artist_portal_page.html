@@ -89,11 +89,11 @@
         if (connectBtn) {
           connectBtn.style.display = 'none';
         }
-          // Mostrar o footer com o botão de volta
-    const footer = document.getElementById("daoFooter");
-    if (footer) {
-      footer.style.opacity = '1';
-    }  
+        
+        const footer = document.getElementById("daoFooter");
+        if (footer) {
+          footer.style.opacity = '1';
+        }
       } else {
         document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
       }
@@ -132,7 +132,7 @@
       formData.append('description', descriptionInput.value);
 
       try {
-        const response = await fetch(`${BACKEND_URL}/upload`, {
+        const response = await authenticatedFetch(`${BACKEND_URL}/upload`, {
           method: 'POST',
           body: formData
         });
@@ -251,7 +251,13 @@
       const scrollY = window.scrollY;
       const codeHeight = document.body.scrollHeight;
       const windowH = window.innerHeight;
-      if ((scrollY + windowH) >= codeHeight - 100) {
+      
+      // Se já está conectado, manter footer visível
+      const isConnected = document.getElementById('connectBtn').style.display === 'none';
+      
+      if (isConnected) {
+        footer.style.opacity = 1;
+      } else if ((scrollY + windowH) >= codeHeight - 100) {
         footer.style.opacity = 1;
       } else {
         footer.style.opacity = 0;
