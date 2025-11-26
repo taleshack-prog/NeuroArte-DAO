@@ -11,238 +11,1015 @@
   <meta property="og:description" content="Arte como dado. Ciência como empatia. Descentralização como integridade." />
   <meta property="og:url" content="https://neuroarte.eth.link" />
   <meta property="og:type" content="website" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-  <script>
-    function toggleLanguage(lang) {
-      document.querySelectorAll('[data-lang]').forEach(el => {
-        el.style.display = el.dataset.lang === lang ? 'block' : 'none';
-      });
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      padding-bottom: 100px; /* Espaço para o footer */
+      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh; /* Garante que o body tenha altura suficiente para o scroll */
+      display: flex;
+      flex-direction: column;
     }
-  </script>
+    main {
+      flex-grow: 1; /* Permite que o conteúdo principal ocupe o espaço restante */
+    }
+    footer {
+      position: fixed; /* Alterado para fixed para ficar sempre visível no final da tela */
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
+      padding: 12px 0;
+      text-align: center;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 1.25s ease-in-out;
+    }
+    .section-content {
+      display: none; /* Esconde todas as seções por padrão */
+    }
+    .section-content.active {
+      display: block; /* Mostra a seção ativa */
+    }
+    .nav-link.active {
+      border-bottom: 2px solid #a78bfa; /* Cor roxa para aba ativa */
+      font-weight: bold;
+    }
+    /* Estilos para cards de propostas */
+    .proposal-card {
+      background-color: rgba(17, 24, 39, 0.7); /* gray-900 com opacidade */
+      padding: 1rem;
+      border-radius: 0.75rem; /* rounded-xl */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+      border: 1px solid #6b21a8; /* border-purple-700 */
+    }
+    .proposal-card.art {
+      border-left: 4px solid #a78bfa; /* purple-400 */
+    }
+    .proposal-card.research {
+      border-left: 4px solid #06b6d4; /* cyan-500 */
+    }
+  </style>
 </head>
-  <div class="p-6 text-center">
-  <button id="connectButton" class="bg-purple-600 hover:bg-purple-500 px-6 py-2 rounded-lg text-white transition">Conectar Wallet</button>
-  <p id="walletAddress" class="mt-4 text-sm text-green-400"></p>
-</div>
-
-<script>
-  const connectButton = document.getElementById("connectButton");
-  const walletAddress = document.getElementById("walletAddress");
-
-  connectButton.addEventListener("click", async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        walletAddress.textContent = `Wallet conectada: ${accounts[0]}`;
-      } catch (error) {
-        walletAddress.textContent = "Conexão recusada.";
-      }
-    } else {
-      walletAddress.textContent = "Instale o MetaMask para conectar.";
-    }
-  });
-</script>
-
-<body class="bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans">
-  <header class="p-6 flex justify-between items-center border-b border-gray-700">
-    <h1 class="text-2xl font-bold">🧠 NeuroArte DAO</h1>
-    <nav class="mt-4 text-sm text-center">
-  <a href="index.html" class="text-purple-400 underline mx-2">🏠 Início</a>
-  <a href="artist_portal_page.html" class="text-purple-400 underline mx-2">🎨 Portal do Artista</a>
-  <a href="curadoria_portal_page.html" class="text-purple-400 underline mx-2">🧪 Curadoria</a>
-</nav>
-
-    <div>
+<body class="text-white">
+  <header class="p-6 flex flex-col md:flex-row justify-between items-center border-b border-gray-700">
+    <h1 class="text-2xl font-bold mb-4 md:mb-0">🧠 NeuroArte DAO</h1>
+    <nav class="mt-4 text-sm text-center flex flex-wrap justify-center gap-4">
+      <a href="#" class="nav-link text-purple-400 hover:underline mx-2" data-section="home">🏠 Início</a>
+      <a href="#" class="nav-link text-purple-400 hover:underline mx-2" data-section="artist">🎨 Portal do Artista</a>
+      <a href="#" class="nav-link text-purple-400 hover:underline mx-2" data-section="scientist">🔬 Portal do Cientista</a>
+      <a href="#" class="nav-link text-purple-400 hover:underline mx-2" data-section="supporter">🤝 Portal do Apoiador</a>
+      <a href="#" class="nav-link text-purple-400 hover:underline mx-2" data-section="curation">🖋️ Curadoria</a>
+    </nav>
+    <div class="mt-4 md:mt-0 flex items-center">
+      <button id="globalConnectBtn" class="bg-purple-700 px-4 py-2 rounded-xl">✨ Conectar Wallet</button>
+      <p id="globalWalletStatus" class="text-sm text-gray-300 ml-2"></p>
       <button onclick="toggleLanguage('pt')" class="px-2 py-1 mx-1 bg-purple-600 rounded">PT</button>
       <button onclick="toggleLanguage('en')" class="px-2 py-1 mx-1 bg-purple-600 rounded">EN</button>
     </div>
   </header>
 
-  <main class="p-10 max-w-4xl mx-auto">
- <!-- Português -->
-<div data-lang="pt">
-  <section class="py-10 px-6 bg-gray-900 text-white">
-    <h2 class="text-2xl font-bold mb-6">Escolha seu perfil na DAO</h2>
-    <div class="grid md:grid-cols-3 gap-6">
-  
-   
-      <!-- Artistas -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🎨 Artista</h3>
-        <p class="mb-4">Submeta sua arte, acompanhe vendas e participe da Creative Chamber.</p>
-        <a href="artist.html"><button class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button></a>
+  <main class="p-10 max-w-6xl mx-auto">
+
+    <!-- ==================================================================================================== -->
+    <!-- HOME SECTION -->
+    <!-- ==================================================================================================== -->
+    <section id="home-section" class="section-content active">
+      <div data-lang="pt">
+        <section class="py-10 px-6 bg-gray-900 bg-opacity-70 text-white rounded-2xl shadow-lg mb-12">
+          <h2 class="text-2xl font-bold mb-6">Escolha seu perfil na DAO</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🎨 Artista</h3>
+              <p class="mb-4">Submeta sua arte, acompanhe vendas e participe da Creative Chamber.</p>
+              <button onclick="showSection('artist')" class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button>
+            </div>
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🔬 Cientista</h3>
+              <p class="mb-4">Proponha pesquisas e publique métodos e resultados on-chain.</p>
+              <button onclick="showSection('scientist')" class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button>
+            </div>
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🤝 Apoiador</h3>
+              <p class="mb-4">Adquira tokens, vote e acompanhe projetos financiados.</p>
+              <button onclick="showSection('supporter')" class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <!-- Cientistas -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🔬 Cientista</h3>
-        <p class="mb-4">Proponha pesquisas e publique métodos e resultados on-chain.</p>
-        <a href="scientist.html"><button class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button></a>
+      <div data-lang="en" style="display: none;">
+        <section class="py-10 px-6 bg-gray-900 bg-opacity-70 text-white rounded-2xl shadow-lg mb-12">
+          <h2 class="text-2xl font-bold mb-6">Choose your profile in the DAO</h2>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🎨 Artist</h3>
+              <p class="mb-4">Submit your artwork, track sales, and participate in the Creative Chamber.</p>
+              <button onclick="showSection('artist')" class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button>
+            </div>
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🔬 Scientist</h3>
+              <p class="mb-4">Propose research and publish methods and results on-chain.</p>
+              <button onclick="showSection('scientist')" class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button>
+            </div>
+            <div class="proposal-card">
+              <h3 class="text-xl font-semibold mb-4">🤝 Supporter</h3>
+              <p class="mb-4">Acquire tokens, vote, and track funded projects.</p>
+              <button onclick="showSection('supporter')" class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <!-- Apoiadores -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🤝 Apoiador</h3>
-        <p class="mb-4">Adquira tokens, vote e acompanhe projetos financiados.</p>
-        <a href="supporter.html"><button class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button></a>
+      <div data-lang="pt">
+        <section class="mb-12">
+          <h2 class="text-xl font-semibold mb-2">Arte, Ciência e Descentralização</h2>
+          <p class="text-gray-300 leading-relaxed">
+            DAO global que valoriza artistas aliados à neurodiversidade e financia pesquisa aberta com ética e transparência on-chain.
+          </p>
+        </section>
+
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">📄 Documentação</h3>
+          <ul class="space-y-2">
+            <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
+            <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
+            <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">Repositório GitHub</a></li>
+          </ul>
+        </section>
+
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">📡 Identidade On-Chain</h3>
+          <ul class="space-y-2 text-sm">
+            <li><strong>ENS:</strong> neuroarte.eth</li>
+            <li><strong>Endereço:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
+            <li><strong>Validade:</strong> Outubro 21, 2026</li>
+            <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
+          </ul>
+        </section>
+
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">✉️ Fale Conosco</h3>
+          <form action="https://formspree.io/f/xdkpoqdy" method="POST" class="space-y-4">
+            <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Seu nome" required />
+            <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Seu email" required />
+            <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Mensagem" required></textarea>
+            <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Enviar</button>
+          </form>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold mb-4">🔐 Transparência</h3>
+          <p class="text-gray-400">A DAO divulgará todas as transações, decisões e gastos após o deploy inicial.</p>
+        </section>
       </div>
 
-    </div>
-  </section>
-</div>
+      <div data-lang="en" style="display:none">
+        <section class="mb-12">
+          <h2 class="text-xl font-semibold mb-2">Art, Science & Decentralization</h2>
+          <p class="text-gray-300 leading-relaxed">
+            A global DAO that empowers artists aligned with neurodiversity and funds open research with ethics and on-chain transparency.
+          </p>
+        </section>
 
-<!-- Inglês -->
-<div data-lang="en" style="display: none;">
-  <section class="py-10 px-6 bg-gray-900 text-white">
-    <h2 class="text-2xl font-bold mb-6">Choose your profile in the DAO</h2>
-    <div class="grid md:grid-cols-3 gap-6">
-      
-      <!-- Artists -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🎨 Artist</h3>
-        <p class="mb-4">Submit your artwork, track sales, and participate in the Creative Chamber.</p>
-        <a href="artist.html"><button class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button></a>
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">📄 Documentation</h3>
+          <ul class="space-y-2">
+            <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
+            <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
+            <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">GitHub Repository</a></li>
+          </ul>
+        </section>
+
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">📡 On-Chain Identity</h3>
+          <ul class="space-y-2 text-sm">
+            <li><strong>ENS:</strong> neuroarte.eth</li>
+            <li><strong>Address:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
+            <li><strong>Valid Until:</strong> October 21, 2026</li>
+            <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
+          </ul>
+        </section>
+
+        <section class="mb-12">
+          <h3 class="text-lg font-semibold mb-4">✉️ Contact</h3>
+          <form action="https://formspree.io/f/xdkpoqdy" method="POST" class="space-y-4">
+            <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Your name" required />
+            <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Your email" required />
+            <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Message" required></textarea>
+            <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Send</button>
+          </form>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold mb-4">🔐 Transparency</h3>
+          <p class="text-gray-400">The DAO will disclose all transactions, decisions, and expenses after the initial deploy.</p>
+        </section>
       </div>
+    </section>
 
-      <!-- Scientists -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🔬 Scientist</h3>
-        <p class="mb-4">Propose research and publish methods and results on-chain.</p>
-       <button 
-        onclick="window.location.href='scientist_portal_page.html'" 
-        class="bg-white text-purple-800 px-4 py-2 rounded hover:bg-purple-100 transition">
-        🔬 Portal do Cientista
-        </button>
+    <!-- ==================================================================================================== -->
+    <!-- ARTIST PORTAL SECTION -->
+    <!-- ==================================================================================================== -->
+    <section id="artist-section" class="section-content">
+      <header class="text-center mt-10">
+        <h1 class="text-4xl font-bold">🌈 Portal do Artista</h1>
+        <p class="text-gray-300 mt-2">Submeta sua arte e contribua com a galeria da NeuroArte DAO.</p>
+      </header>
 
-
-      </div>
-
-      <!-- Supporters -->
-      <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
-        <h3 class="text-xl font-semibold mb-4">🤝 Supporter</h3>
-        <p class="mb-4">Acquire tokens, vote, and track funded projects.</p>
-        <a href="supporter.html"><button class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button></a>
-      </div>
-
-    </div>
-  </section>
-</div>
-
-
-<!-- Inglês -->
-<div data-lang="en" style="display: none;">
-  <section class="...">
-    ...
-  </section>
-</div>
-
-
-  </div>
-</section>
-
-    <div data-lang="pt">
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-2">Arte, Ciência e Descentralização</h2>
-        <p class="text-gray-300 leading-relaxed">
-          DAO global que valoriza artistas aliados à neurodiversidade e financia pesquisa aberta com ética e transparência on-chain.
-        </p>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">📄 Documentação</h3>
-        <ul class="space-y-2">
-          <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
-          <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
-          <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">Repositório GitHub</a></li>
-        </ul>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">📡 Identidade On-Chain</h3>
-        <ul class="space-y-2 text-sm">
-          <li><strong>ENS:</strong> neuroarte.eth</li>
-          <li><strong>Endereço:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
-          <li><strong>Validade:</strong> Outubro 21, 2026</li>
-          <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
-        </ul>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">✉️ Fale Conosco</h3>
-        
-      </section>
-<form action="https://formspree.io/f/xdkpoqdy" method="POST" class="space-y-4">
-  <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Your name" required />
-  <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Your email" required />
-  <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Message" required></textarea>
-  <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Send</button>
-</form>
-
-      <section>
-        <h3 class="text-lg font-semibold mb-4">🔐 Transparência</h3>
-        <p class="text-gray-400">A DAO divulgará todas as transações, decisões e gastos após o deploy inicial.</p>
-      </section>
-    </div>
-
-    <!-- English Version -->
-    <div data-lang="en" style="display:none">
-      <section class="mb-12">
-        <h2 class="text-xl font-semibold mb-2">Art, Science & Decentralization</h2>
-        <p class="text-gray-300 leading-relaxed">
-          A global DAO that empowers artists aligned with neurodiversity and funds open research with ethics and on-chain transparency.
-        </p>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">📄 Documentation</h3>
-        <ul class="space-y-2">
-          <li>📘 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreidtx5gvwsa2cg2yamv4roaewlretv564qp6osgp7n3e64l5fccvsq" target="_blank">Whitepaper (IPFS)</a></li>
-          <li>🪙 <a class="text-blue-400 hover:underline" href="https://gateway.pinata.cloud/ipfs/bafkreih7jzoou3fttphmds2oofk4tdsxobvnwf7b5g3kptxjepka76zxga" target="_blank">Token Spec (IPFS)</a></li>
-          <li>📦 <a class="text-blue-400 hover:underline" href="https://github.com/taleshack-prog/NeuroArte-DAO" target="_blank">GitHub Repository</a></li>
-        </ul>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">📡 On-Chain Identity</h3>
-        <ul class="space-y-2 text-sm">
-          <li><strong>ENS:</strong> neuroarte.eth</li>
-          <li><strong>Address:</strong> 0xE9eFC721405e102d81ee910C7B2534e1790632A4</li>
-          <li><strong>Valid Until:</strong> October 21, 2026</li>
-          <li><strong>Email:</strong> <a class="text-blue-400 hover:underline" href="mailto:neuroartdao@proton.me">neuroartdao@proton.me</a></li>
-        </ul>
-      </section>
-
-      <section class="mb-12">
-        <h3 class="text-lg font-semibold mb-4">✉️ Contact</h3>
-        <form action="mailto:neuroartdao@proton.me" method="post" enctype="text/plain" class="space-y-4">
-          <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Your name" required />
-          <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Your email" required />
-          <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Message" required></textarea>
-          <button class="bg-purple-700 px-4 py-2 rounded" type="submit">Send</button>
+      <section class="max-w-3xl mx-auto mt-12 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4">🎓 Submeter Obra para Mintagem</h2>
+        <form id="artistUploadForm" class="space-y-4" enctype="multipart/form-data" onsubmit="submitArt(event)">
+          <input type="text" id="artistTitleInput" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+          <textarea id="artistDescriptionInput" placeholder="Descrição da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required></textarea>
+          <input type="file" id="artistArtFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+          <button type="button" onclick="uploadArt()" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl">🗕️ Enviar Arte</button>
+          <input type="text" id="artistIpfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 text-white border border-purple-700" readonly required>
+          <input type="number" id="artistEditionsInput" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" min="1" required>
+          <input type="text" placeholder="Wallet do Artista (0x...)" id="artistWalletInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+          <button type="submit" id="artistSubmitButton" class="w-full bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
         </form>
+        <p id="artistSubmitStatus" class="text-sm text-gray-400 mt-2"></p>
+        <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
       </section>
 
-      <section>
-        <h3 class="text-lg font-semibold mb-4">🔐 Transparency</h3>
-        <p class="text-gray-400">The DAO will disclose all transactions, decisions, and expenses after the initial deploy.</p>
+      <section class="max-w-4xl mx-auto mt-12 px-4">
+        <h2 class="text-xl font-semibold text-center mb-2">🎨 Galeria NeuroArte DAO</h2>
+        <p class="text-center text-sm text-gray-400 mb-6">Obras mintadas por artistas da DAO e listadas na <a href="https://manifold.xyz" class="text-purple-400 underline">Manifold</a>.</p>
+        <div id="artGallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
       </section>
-    </div>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- SCIENTIST PORTAL SECTION -->
+    <!-- ==================================================================================================== -->
+    <section id="scientist-section" class="section-content">
+      <header class="text-center mt-10">
+        <h1 class="text-4xl font-bold">🔬 Portal do Cientista</h1>
+        <p class="text-gray-300 mt-2">Pesquisa Aberta, Transparente e Descentralizada</p>
+      </header>
+
+      <section class="max-w-3xl mx-auto mt-12 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4">🧪 Submeta sua Proposta de Pesquisa</h2>
+        <form id="scientistProposalForm" class="space-y-4" onsubmit="submitResearch(event)">
+          <div>
+            <label class="block text-sm mb-1">Título da Proposta</label>
+            <input type="text" id="scientistTitleInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" required />
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Área Científica</label>
+            <select id="scientistAreaInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none">
+              <option>Neurociência</option>
+              <option>Psicologia</option>
+              <option>Educação</option>
+              <option>Arte-Cognição</option>
+              <option>Interdisciplinar</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Resumo (Abstract)</label>
+            <textarea id="scientistAbstractInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" rows="4" placeholder="Descreva brevemente sua proposta..." required></textarea>
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Financiamento Solicitado (em $NEURO)</label>
+            <input type="number" id="scientistFundingInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" placeholder="Ex: 25000" required />
+          </div>
+          <div>
+            <label class="block text-sm mb-1">Seu Wallet (ou Nome)</label>
+            <input type="text" id="scientistWalletInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700 focus:outline-none" required />
+          </div>
+          <button type="submit" class="w-full mt-4 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg transition">
+            Submeter para Revisão Comunitária 🧠
+          </button>
+        </form>
+        <p id="scientistStatusMessage" class="text-sm text-gray-400 mt-2"></p>
+      </section>
+
+      <section class="max-w-5xl mx-auto mt-16">
+        <h2 class="text-2xl font-semibold mb-6 text-center">🧠 Pesquisas em Andamento</h2>
+        <div id="scientistProposalsList" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+          <!-- Carregado dinamicamente via JavaScript -->
+        </div>
+      </section>
+
+      <section class="max-w-4xl mx-auto mt-16 mb-32 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4 text-center">💰 Financiamento e Transparência</h2>
+        <p class="text-gray-300 text-center mb-6">
+          Monitoramento em tempo real do uso de recursos da DAO em pesquisas.
+        </p>
+        <div id="scientistFundingList" class="space-y-4">
+          <!-- Carregado dinamicamente -->
+        </div>
+      </section>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- SUPPORTER PORTAL SECTION -->
+    <!-- ==================================================================================================== -->
+    <section id="supporter-section" class="section-content">
+      <header class="text-center mt-10">
+        <h1 class="text-4xl font-bold">🧠 Portal do Apoiador</h1>
+        <p class="text-gray-300 mt-2">Engaje-se com a governança e apoie a ciência aberta.</p>
+      </header>
+
+      <section class="max-w-4xl mx-auto mt-12 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4">🎨 Votação: Propostas de Arte</h2>
+        <div id="supporterArtVotingList" class="space-y-4">
+          <p class="text-gray-400">Carregando propostas...</p>
+        </div>
+      </section>
+
+      <section class="max-w-4xl mx-auto mt-12 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4">🔬 Votação: Propostas de Pesquisa</h2>
+        <div id="supporterResearchVotingList" class="space-y-4">
+          <p class="text-gray-400">Carregando propostas...</p>
+        </div>
+      </section>
+
+      <section class="max-w-3xl mx-auto mt-12 proposal-card">
+        <h2 class="text-2xl font-semibold mb-4">💡 Sugerir Nova Pauta</h2>
+        <form id="supporterSuggestionForm" class="space-y-4" onsubmit="submitSuggestion(event)">
+          <input type="text" id="supporterSuggestionTitle" placeholder="Título da Proposta" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+          <textarea id="supporterSuggestionDesc" placeholder="Descrição detalhada" class="w-full p-2 h-24 rounded bg-gray-800 text-white border border-purple-700" required></textarea>
+          <button type="submit" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl">Enviar Sugestão</button>
+        </form>
+        <p id="supporterSuggestionStatus" class="text-sm text-gray-400 mt-2"></p>
+      </section>
+
+      <section class="max-w-4xl mx-auto mt-12 mb-20 proposal-card">
+        <h2 class="text-2xl font-semibold text-center mb-4">📊 Transparência da DAO</h2>
+        <ul class="text-sm text-gray-300 list-disc pl-6 space-y-1">
+          <li>Distribuição de tokens: <a href="#" class="text-blue-400 underline">ver em Dune</a></li>
+          <li>Propostas anteriores e resultados</li>
+          <li>Auditorias públicas: contratos, CIDs e hashes registrados</li>
+          <li>Fontes de financiamento e COI declarados</li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- ==================================================================================================== -->
+    <!-- CURATION PORTAL SECTION -->
+    <!-- ==================================================================================================== -->
+    <section id="curation-section" class="section-content">
+      <header class="text-center py-4">
+        <h1 class="text-3xl font-bold">🖋️ Painel de Curadoria</h1>
+        <p class="text-sm">Revisão das obras submetidas à NeuroArte DAO</p>
+      </header>
+
+      <main class="max-w-3xl mx-auto p-4">
+        <section class="proposal-card">
+          <h2 class="text-xl font-bold mb-4 flex items-center">
+            🖼️ <span class="ml-2">Obras Submetidas</span>
+          </h2>
+          <div id="curationArtworksContainer">
+            <!-- Obras serão carregadas aqui via JS -->
+          </div>
+        </section>
+      </main>
+    </section>
+
   </main>
 
-  <footer class="p-6 text-center text-xs text-gray-600 border-t border-gray-700">
-    &copy; 2025 NeuroArte DAO — Arte como dado. Ciência como empatia.
+  <footer id="daoFooter">
+    <a href="#" onclick="showSection('home'); return false;" style="display:inline-block; background:#d020b1; color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none;">
+      ← Voltar à Página Inicial
+    </a>
+    <p id="footerText" class="text-gray-400 text-sm mt-2">
+      Feito com 🍩 ✨ ❤️ pela comunidade NeuroArte DAO.
+    </p>
   </footer>
-  <footer class="text-center mt-10 text-sm text-gray-400 space-y-2">
-  <a href="members.html" class="text-purple-400 hover:underline block">🧬 Entrar na DAO</a>
-  <a href="https://discord.gg/Rt4eExyX" target="_blank"
-     class="inline-flex items-center px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white font-semibold rounded-lg shadow-md transition duration-300">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515..." />
-    </svg>
-    Entrar no Discord
-  </a>
-</footer>
 
+  <script>
+    // ====================================================================================================
+    // GLOBAL WEB3 AUTH FUNCTIONS (INTEGRATED FROM web3Auth.js)
+    // ====================================================================================================
+    const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+    let globalUserWallet = null; // Para armazenar a wallet autenticada globalmente
 
+    async function authenticateWithWeb3() {
+      try {
+        if (!window.ethereum) {
+          alert('⚠️ Instale MetaMask para continuar');
+          return null;
+        }
+
+        console.log('🔌 Conectando à carteira...');
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const wallet = accounts[0];
+        console.log('✅ Carteira conectada:', wallet);
+
+        console.log('🔐 Solicitando desafio...');
+        const challengeResponse = await fetch(`${BACKEND_URL}/api/auth/challenge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wallet })
+        });
+
+        const { message, timestamp } = await challengeResponse.json();
+        console.log('📝 Desafio recebido:', message);
+
+        console.log('✍️ Pedindo assinatura...');
+        const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, wallet] });
+        console.log('✅ Mensagem assinada');
+
+        console.log('🔍 Verificando assinatura no backend...');
+        const verifyResponse = await fetch(`${BACKEND_URL}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wallet, message, signature })
+        });
+
+        const verifyData = await verifyResponse.json();
+
+        if (verifyData.success) {
+          console.log('🎉 Autenticação bem-sucedida!');
+          localStorage.setItem('authToken', verifyData.token);
+          localStorage.setItem('userWallet', wallet);
+          globalUserWallet = wallet; // Atualiza a variável global
+          return { token: verifyData.token, wallet: verifyData.wallet };
+        } else {
+          alert('❌ Falha na autenticação: ' + verifyData.error);
+          return null;
+        }
+
+      } catch (error) {
+        console.error('❌ Erro:', error);
+        alert('Erro ao autenticar. Verifique o console.');
+        return null;
+      }
+    }
+
+    function getAuthToken() {
+      return localStorage.getItem('authToken');
+    }
+
+    function getUserWallet() {
+      return globalUserWallet || localStorage.getItem('userWallet');
+    }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userWallet');
+      globalUserWallet = null;
+      console.log('✅ Desconectado');
+      updateGlobalWalletStatus();
+      // Resetar estados dos portais se necessário
+    }
+
+    async function authenticatedFetch(url, options = {}) {
+      const token = getAuthToken();
+      const headers = { 'Content-Type': 'application/json', ...options.headers };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      return fetch(url, { ...options, headers });
+    }
+
+    // ====================================================================================================
+    // GLOBAL UI FUNCTIONS
+    // ====================================================================================================
+
+    // Função para alternar a visibilidade das seções
+    function showSection(sectionId) {
+      document.querySelectorAll('.section-content').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`${sectionId}-section`).classList.add('active');
+
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      document.querySelector(`.nav-link[data-section="${sectionId}"]`).classList.add('active');
+
+      // Carregar dados específicos da seção se necessário
+      if (sectionId === 'artist') {
+        renderGallery(artistArtworks); // Renderiza a galeria de exemplo
+      } else if (sectionId === 'scientist') {
+        loadScientistProposals();
+      } else if (sectionId === 'supporter') {
+        loadSupporterArtProposals();
+        loadSupporterResearchProposals();
+      } else if (sectionId === 'curation') {
+        loadCurationArtworks();
+      }
+    }
+
+    // Função para atualizar o status da wallet global
+    async function updateGlobalWalletStatus() {
+      const wallet = getUserWallet();
+      const statusElement = document.getElementById("globalWalletStatus");
+      const connectBtn = document.getElementById("globalConnectBtn");
+
+      if (wallet) {
+        statusElement.textContent = `✅ Autenticado: ${wallet.substring(0, 6)}...${wallet.substring(wallet.length - 4)}`;
+        connectBtn.style.display = 'none';
+        // Atualizar campos de wallet nos formulários
+        if (document.getElementById("artistWalletInput")) document.getElementById("artistWalletInput").value = wallet;
+        if (document.getElementById("scientistWalletInput")) document.getElementById("scientistWalletInput").value = wallet;
+        if (document.getElementById("artistSubmitButton")) document.getElementById("artistSubmitButton").disabled = false;
+      } else {
+        statusElement.textContent = `❌ Não conectado`;
+        connectBtn.style.display = 'inline-block';
+        if (document.getElementById("artistSubmitButton")) document.getElementById("artistSubmitButton").disabled = true;
+      }
+    }
+
+    // Event listener para o botão de conectar wallet global
+    document.getElementById("globalConnectBtn").addEventListener("click", async () => {
+      await authenticateWithWeb3();
+      updateGlobalWalletStatus();
+    });
+
+    // Função para alternar idioma
+    function toggleLanguage(lang) {
+      document.querySelectorAll('[data-lang]').forEach(el => {
+        el.style.display = el.dataset.lang === lang ? 'block' : 'none';
+      });
+    }
+
+    // ====================================================================================================
+    // ARTIST PORTAL LOGIC
+    // ====================================================================================================
+
+    async function uploadArt() {
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para fazer upload. Clique em "Conectar Wallet"');
+        return;
+      }
+
+      const fileInput = document.getElementById('artistArtFile');
+      const titleInput = document.getElementById('artistTitleInput');
+      const descriptionInput = document.getElementById('artistDescriptionInput');
+      const ipfsInput = document.getElementById('artistIpfsLink');
+
+      if (!fileInput.files.length) {
+        alert('❌ Escolha um arquivo JPEG primeiro!');
+        return;
+      }
+      if (!titleInput.value.trim()) {
+        alert('❌ Preencha o título da obra');
+        return;
+      }
+      if (!descriptionInput.value.trim()) {
+        alert('❌ Preencha a descrição da obra');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('artwork', fileInput.files[0]);
+      formData.append('title', titleInput.value);
+      formData.append('description', descriptionInput.value);
+
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        console.log("Resposta do servidor:", result);
+
+        if (result && result.url && result.cid) {
+          ipfsInput.value = result.url;
+          alert('✅ Imagem enviada com sucesso! Link IPFS gerado.');
+        } else {
+          throw new Error('Resposta inesperada do servidor: ' + JSON.stringify(result));
+        }
+      } catch (error) {
+        console.error('Erro no upload:', error);
+        alert('❌ Falha ao enviar a imagem pro IPFS.');
+      }
+    }
+
+    async function submitArt(event) {
+      event.preventDefault();
+
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado. Clique em "Conectar Wallet"');
+        return;
+      }
+
+      const title = document.getElementById('artistTitleInput').value;
+      const description = document.getElementById('artistDescriptionInput').value;
+      const ipfsLink = document.getElementById('artistIpfsLink').value;
+      const artistWallet = document.getElementById('artistWalletInput').value;
+      const editions = document.getElementById('artistEditionsInput').value;
+      const statusMsg = document.getElementById('artistSubmitStatus');
+
+      if (!ipfsLink.trim()) {
+        alert('❌ Você precisa fazer upload da arte primeiro (clique em "🗕️ Enviar Arte")');
+        return;
+      }
+      if (!title.trim() || !description.trim() || !artistWallet.trim() || !editions) {
+        alert('❌ Preencha todos os campos obrigatórios');
+        return;
+      }
+
+      statusMsg.textContent = '⏳ Enviando proposta...';
+
+      try {
+        const ipfsHash = ipfsLink.includes('/ipfs/') ? ipfsLink.split('/ipfs/')[1] : ipfsLink;
+
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/art/submit`, {
+          method: 'POST',
+          body: JSON.stringify({ title, description, ipfsHash, artistWallet, editions: parseInt(editions) })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a curadoria.`;
+          document.getElementById('artistUploadForm').reset();
+          document.getElementById('artistIpfsLink').value = '';
+          document.getElementById('artistSubmitButton').disabled = true;
+        } else {
+          statusMsg.textContent = `❌ Erro: ${result.error}`;
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        statusMsg.textContent = '❌ Erro ao enviar proposta. Verifique a conexão.';
+      }
+    }
+
+    const artistArtworks = [
+      { title: "Neuroesfera I", artist: "Tales Hack", image: "https://ipfs.io/ipfs/bafybeiexample1", link: "https://manifold.xyz/c/0x1234", price: "0.12 ETH" },
+      { title: "Fluxo Divergente", artist: "Maya Costa", image: "https://ipfs.io/ipfs/bafybeiexample2", link: "https://manifold.xyz/c/0x5678", price: "0.20 ETH" }
+    ];
+
+    function renderGallery(data) {
+      const gallery = document.getElementById("artGallery");
+      gallery.innerHTML = "";
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-xl p-4 border border-purple-700 shadow";
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" class="w-full h-40 object-cover rounded" />
+          <h3 class="mt-2 text-lg font-bold">${item.title}</h3>
+          <p class="text-sm">🔍 ${item.artist}</p>
+          <p class="text-sm">💰 ${item.price}</p>
+          <a class="text-sm text-purple-400 underline" href="${item.link}" target="_blank">Ver na Manifold</a>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+
+    // ====================================================================================================
+    // SCIENTIST PORTAL LOGIC
+    // ====================================================================================================
+
+    async function submitResearch(event) {
+      event.preventDefault();
+
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado. Clique em "Conectar Wallet"');
+        return;
+      }
+
+      const title = document.getElementById("scientistTitleInput").value;
+      const area = document.getElementById("scientistAreaInput").value;
+      const abstract = document.getElementById("scientistAbstractInput").value;
+      const funding = document.getElementById("scientistFundingInput").value;
+      const wallet = document.getElementById("scientistWalletInput").value;
+      const statusMsg = document.getElementById("scientistStatusMessage");
+
+      try {
+        statusMsg.textContent = "⏳ Enviando proposta...";
+
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/research/submit`, {
+          method: "POST",
+          body: JSON.stringify({ title, abstract, picoJson: { area }, requestedFunding: parseInt(funding), scientistWallet: wallet })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a revisão comunitária.`;
+          document.getElementById("scientistProposalForm").reset();
+          loadScientistProposals();
+        } else {
+          statusMsg.textContent = `❌ Erro: ${result.error}`;
+        }
+      } catch (error) {
+        console.error("Erro:", error);
+        statusMsg.textContent = "❌ Erro ao enviar proposta. Verifique a conexão.";
+      }
+    }
+
+    async function loadScientistProposals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/research/proposals`);
+        const data = await response.json();
+
+        const container = document.getElementById("scientistProposalsList");
+        container.innerHTML = "";
+
+        if (data.proposals.length === 0) {
+          container.innerHTML = '<p class="text-gray-400 col-span-full text-center">Nenhuma proposta pendente.</p>';
+          return;
+        }
+
+        data.proposals.forEach(proposal => {
+          const card = document.createElement("div");
+          card.className = "proposal-card research";
+          card.innerHTML = `
+            <h3 class="font-semibold text-lg">${proposal.title}</h3>
+            <p class="text-gray-400 text-sm mb-1">Cientista: ${proposal.scientistWallet}</p>
+            <p class="text-purple-400 text-sm mb-2">Status: Aguardando Votação</p>
+            <p class="text-gray-300 text-sm mb-2">${proposal.abstract.substring(0, 100)}...</p>
+            <p class="text-sm text-yellow-400">Financiamento: $${proposal.requestedFunding} NEURO</p>
+            <div class="mt-3 flex gap-2">
+              <button onclick="voteResearch(${proposal.id}, 'for')" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">👍 Apoiar</button>
+              <button onclick="voteResearch(${proposal.id}, 'against')" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">👎 Rejeitar</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Votos: ✅ ${proposal.votes.for} | ❌ ${proposal.votes.against}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar propostas de cientista:", error);
+      }
+    }
+
+    // ====================================================================================================
+    // SUPPORTER PORTAL LOGIC
+    // ====================================================================================================
+
+    async function loadSupporterArtProposals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/art/proposals`);
+        const data = await response.json();
+
+        const container = document.getElementById("supporterArtVotingList");
+        container.innerHTML = "";
+
+        if (data.proposals.length === 0) {
+          container.innerHTML = '<p class="text-gray-400">Nenhuma proposta de arte pendente.</p>';
+          return;
+        }
+
+        data.proposals.forEach(proposal => {
+          const card = document.createElement("div");
+          card.className = "proposal-card art";
+          card.innerHTML = `
+            <h3 class="font-bold text-lg">🎨 ${proposal.title}</h3>
+            <p class="text-sm text-gray-400">Artista: ${proposal.artistWallet}</p>
+            <p class="text-sm text-gray-300 mt-2">${proposal.description}</p>
+            <p class="text-sm text-yellow-400 mt-2">IPFS: <a href="https://ipfs.io/ipfs/${proposal.ipfsHash}" target="_blank" class="underline">${proposal.ipfsHash.slice(0, 20)}...</a></p>
+            
+            <div class="mt-3 flex gap-2">
+              <button onclick="voteArt(${proposal.id}, 'for')" class="bg-green-600 hover:bg-green-700 px-4 py-1 rounded text-sm">👍 Apoiar</button>
+              <button onclick="voteArt(${proposal.id}, 'against')" class="bg-red-600 hover:bg-red-700 px-4 py-1 rounded text-sm">👎 Rejeitar</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Votos: ✅ ${proposal.votes.for} | ❌ ${proposal.votes.against}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar propostas de arte:", error);
+        document.getElementById("supporterArtVotingList").innerHTML = '<p class="text-red-400">Erro ao carregar propostas.</p>';
+      }
+    }
+
+    async function loadSupporterResearchProposals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/research/proposals`);
+        const data = await response.json();
+
+        const container = document.getElementById("supporterResearchVotingList");
+        container.innerHTML = "";
+
+        if (data.proposals.length === 0) {
+          container.innerHTML = '<p class="text-gray-400">Nenhuma proposta de pesquisa pendente.</p>';
+          return;
+        }
+
+        data.proposals.forEach(proposal => {
+          const card = document.createElement("div");
+          card.className = "proposal-card research";
+          card.innerHTML = `
+            <h3 class="font-bold text-lg">🔬 ${proposal.title}</h3>
+            <p class="text-sm text-gray-400">Cientista: ${proposal.scientistWallet}</p>
+            <p class="text-sm text-gray-300 mt-2">${proposal.abstract}</p>
+            <p class="text-sm text-yellow-400 mt-2">💰 Financiamento solicitado: $${proposal.requestedFunding} NEURO</p>
+            
+            <div class="mt-3 flex gap-2">
+              <button onclick="voteResearch(${proposal.id}, 'for')" class="bg-green-600 hover:bg-green-700 px-4 py-1 rounded text-sm">👍 Financiar</button>
+              <button onclick="voteResearch(${proposal.id}, 'against')" class="bg-red-600 hover:bg-red-700 px-4 py-1 rounded text-sm">👎 Rejeitar</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Votos: ✅ ${proposal.votes.for} | ❌ ${proposal.votes.against}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar propostas de pesquisa:", error);
+        document.getElementById("supporterResearchVotingList").innerHTML = '<p class="text-red-400">Erro ao carregar propostas.</p>';
+      }
+    }
+
+    async function voteArt(proposalId, vote) {
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+      const wallet = getUserWallet();
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
+          method: "POST",
+          body: JSON.stringify({ proposalId, proposalType: "art", voterWallet: wallet, vote })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("✅ Voto registrado!");
+          loadSupporterArtProposals();
+        } else {
+          alert(`❌ ${result.error}`);
+        }
+      } catch (error) {
+        alert("Erro ao votar");
+      }
+    }
+
+    async function voteResearch(proposalId, vote) {
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+      const wallet = getUserWallet();
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
+          method: "POST",
+          body: JSON.stringify({ proposalId, proposalType: "research", voterWallet: wallet, vote })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("✅ Voto registrado!");
+          loadSupporterResearchProposals();
+        } else {
+          alert(`❌ ${result.error}`);
+        }
+      } catch (error) {
+        alert("Erro ao votar");
+      }
+    }
+
+    async function submitSuggestion(event) {
+      event.preventDefault();
+      const title = document.getElementById("supporterSuggestionTitle").value;
+      const description = document.getElementById("supporterSuggestionDesc").value;
+      const statusMsg = document.getElementById("supporterSuggestionStatus");
+      statusMsg.textContent = "⏳ Enviando...";
+      // Por enquanto, apenas confirma (depois conecta a um endpoint real)
+      setTimeout(() => {
+        statusMsg.textContent = "✅ Sugestão enviada! Obrigado por contribuir.";
+        document.getElementById("supporterSuggestionForm").reset();
+      }, 1000);
+    }
+
+    // ====================================================================================================
+    // CURATION PORTAL LOGIC
+    // ====================================================================================================
+
+    const allowedCurators = [
+      "0xE9eFC721405e1026B1ee91C07B2534e1796632A4", // Exemplo
+      "0x59a42f0b0a6c5e0ab24c09fa4101d2df85d3e391" // Exemplo
+    ].map(w => w.toLowerCase());
+
+    async function loadCurationArtworks() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/art/proposals`);
+        const data = await response.json();
+
+        const container = document.getElementById("curationArtworksContainer");
+        container.innerHTML = "";
+
+        if (data.proposals.length === 0) {
+          container.innerHTML = '<p class="text-gray-400">Nenhuma obra submetida para curadoria.</p>';
+          return;
+        }
+
+        data.proposals.forEach(artwork => {
+          const card = document.createElement("div");
+          card.className = "proposal-card art mb-4";
+          card.innerHTML = `
+            <p class="text-lg font-semibold">${artwork.title}</p>
+            <p class="text-sm text-gray-400">Edições: ${artwork.editions} | Artista: ${artwork.artistWallet}</p>
+            <p class="text-sm text-yellow-400 mt-2">IPFS: <a href="https://ipfs.io/ipfs/${artwork.ipfsHash}" target="_blank" class="underline">${artwork.ipfsHash.slice(0, 20)}...</a></p>
+            <div class="flex justify-between mt-2">
+              <div>
+                <span class="text-green-400">✔️ ${artwork.votes.for}</span>
+                <span class="text-red-400 ml-4">❌ ${artwork.votes.against}</span>
+              </div>
+              <div>
+                <button class="curation-approve-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded mr-2" data-id="${artwork.id}">Aprovar</button>
+                <button class="curation-reject-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded" data-id="${artwork.id}">Rejeitar</button>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        checkCurationAccess();
+      } catch (error) {
+        console.error("Erro ao carregar obras para curadoria:", error);
+        document.getElementById("curationArtworksContainer").innerHTML = '<p class="text-red-400">Erro ao carregar obras.</p>';
+      }
+    }
+
+    async function checkCurationAccess() {
+      const userWallet = getUserWallet();
+      const approveButtons = document.querySelectorAll(".curation-approve-btn, .curation-reject-btn");
+
+      if (userWallet && allowedCurators.includes(userWallet.toLowerCase())) {
+        approveButtons.forEach(btn => {
+          btn.disabled = false;
+          btn.title = "";
+          btn.onclick = (e) => handleCurationVote(e.target.dataset.id, e.target.classList.contains('curation-approve-btn') ? 'for' : 'against');
+        });
+      } else {
+        approveButtons.forEach(btn => {
+          btn.disabled = true;
+          btn.title = "Apenas wallets autorizadas podem aprovar/rejeitar.";
+          btn.onclick = null; // Remove o handler para evitar cliques
+        });
+      }
+    }
+
+    async function handleCurationVote(proposalId, vote) {
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para votar');
+        return;
+      }
+      const wallet = getUserWallet();
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/vote`, {
+          method: "POST",
+          body: JSON.stringify({ proposalId: parseInt(proposalId), proposalType: "art", voterWallet: wallet, vote })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("✅ Voto de curadoria registrado!");
+          loadCurationArtworks();
+        } else {
+          alert(`❌ ${result.error}`);
+        }
+      } catch (error) {
+        alert("Erro ao registrar voto de curadoria.");
+      }
+    }
+
+    // ====================================================================================================
+    // INITIALIZATION & GLOBAL FOOTER LOGIC
+    // ====================================================================================================
+
+    // Inicializa a página mostrando a seção Home
+    document.addEventListener('DOMContentLoaded', () => {
+      showSection('home');
+      updateGlobalWalletStatus();
+      toggleLanguage('pt'); // Define o idioma padrão
+    });
+
+    // Event listeners para as abas de navegação
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = e.target.dataset.section;
+        showSection(section);
+      });
+    });
+
+    // Footer dinâmico
+    window.addEventListener('scroll', () => {
+      const footer = document.getElementById('daoFooter');
+      const scrollY = window.scrollY;
+      const codeHeight = document.body.scrollHeight;
+      const windowH = window.innerHeight;
+      
+      const isConnected = getUserWallet() !== null; // Verifica se há wallet conectada
+      
+      if (isConnected || (scrollY + windowH) >= codeHeight - 100) {
+        footer.style.opacity = 1;
+      } else {
+        footer.style.opacity = 0;
+      }
+    });
+
+    // Mensagens dinâmicas do footer
+    const footerMessages = [
+      "Feito com 🍩 ✨ ❤️ pela comunidade NeuroArte DAO.",
+      "Governança ética, transparente e descentralizada.",
+      "Onde arte e neurodiversidade encontram a pesquisa.",
+      "DAO: ética, arte e ciência em rede viva."
+    ];
+    let footerMessageIndex = 0;
+    setInterval(() => {
+      footerMessageIndex = (footerMessageIndex + 1) % footerMessages.length;
+      document.getElementById("footerText").textContent = footerMessages[footerMessageIndex];
+    }, 6000);
+  </script>
 </body>
 </html>
