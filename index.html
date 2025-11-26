@@ -15,19 +15,19 @@
   <style>
     /* ===== GLOBAL STYLES ===== */
     body {
-      padding-bottom: 100px; /* Adjust for fixed footer */
+      padding-bottom: 100px;
       background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
       color: white;
       font-family: 'Inter', sans-serif;
-      min-height: 100vh; /* Ensure body takes full viewport height */
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
     main {
-      flex-grow: 1; /* Allow main content to expand */
+      flex-grow: 1;
     }
     footer {
-      position: relative; /* Changed from fixed to relative for single page scroll */
+      position: relative;
       left: 0; right: 0; bottom: 0;
       background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
       padding: 12px 0;
@@ -35,16 +35,16 @@
       z-index: 50;
       opacity: 0;
       transition: opacity 1.25s ease-in-out;
-      margin-top: auto; /* Push footer to bottom */
+      margin-top: auto;
     }
     .section-content {
-      display: none; /* Hidden by default */
+      display: none;
     }
     .section-content.active {
-      display: block; /* Active section */
+      display: block;
     }
     .nav-link.active {
-      border-bottom: 2px solid #a78bfa; /* Highlight active tab */
+      border-bottom: 2px solid #a78bfa;
     }
   </style>
 </head>
@@ -79,19 +79,16 @@
         <section class="py-10 px-6 bg-gray-900 text-white rounded-xl mb-12">
           <h2 class="text-2xl font-bold mb-6">Escolha seu perfil na DAO</h2>
           <div class="grid md:grid-cols-3 gap-6">
-            <!-- Artistas -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🎨 Artista</h3>
               <p class="mb-4">Submeta sua arte, acompanhe vendas e participe da Creative Chamber.</p>
               <button onclick="showSection('artist-section')" class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button>
             </div>
-            <!-- Cientistas -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🔬 Cientista</h3>
               <p class="mb-4">Proponha pesquisas e publique métodos e resultados on-chain.</p>
               <button onclick="showSection('scientist-section')" class="bg-white text-purple-800 px-4 py-2 rounded">Entrar</button>
             </div>
-            <!-- Apoiadores -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🤝 Apoiador</h3>
               <p class="mb-4">Adquira tokens, vote e acompanhe projetos financiados.</p>
@@ -147,19 +144,16 @@
         <section class="py-10 px-6 bg-gray-900 text-white rounded-xl mb-12">
           <h2 class="text-2xl font-bold mb-6">Choose your profile in the DAO</h2>
           <div class="grid md:grid-cols-3 gap-6">
-            <!-- Artists -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🎨 Artist</h3>
               <p class="mb-4">Submit your artwork, track sales, and participate in the Creative Chamber.</p>
               <button onclick="showSection('artist-section')" class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button>
             </div>
-            <!-- Scientists -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🔬 Scientist</h3>
               <p class="mb-4">Propose research and publish methods and results on-chain.</p>
               <button onclick="showSection('scientist-section')" class="bg-white text-purple-800 px-4 py-2 rounded">Enter</button>
             </div>
-            <!-- Supporters -->
             <div class="border rounded-xl p-6 bg-purple-800 shadow-lg">
               <h3 class="text-xl font-semibold mb-4">🤝 Supporter</h3>
               <p class="mb-4">Acquire tokens, vote, and track funded projects.</p>
@@ -257,7 +251,6 @@
         <p id="walletStatusScientist" class="text-sm text-gray-300 mt-1"></p>
       </div>
 
-      <!-- Seção: Submissão de Propostas -->
       <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">🧪 Submeta sua Proposta de Pesquisa</h2>
         <form id="proposalForm" class="space-y-4" onsubmit="submitResearch(event)">
@@ -294,22 +287,18 @@
         <p id="statusMessageScientist" class="text-sm text-gray-400 mt-2"></p>
       </section>
 
-      <!-- Seção: Pesquisas em Andamento -->
       <section class="max-w-5xl mx-auto mt-16">
         <h2 class="text-2xl font-semibold mb-6 text-center">🧠 Pesquisas em Andamento</h2>
         <div id="proposalsList" class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          <!-- Carregado dinamicamente via JavaScript -->
         </div>
       </section>
 
-      <!-- Seção: Transparência Financeira -->
       <section class="max-w-4xl mx-auto mt-16 mb-32 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4 text-center">💰 Financiamento e Transparência</h2>
         <p class="text-gray-300 text-center mb-6">
           Monitoramento em tempo real do uso de recursos da DAO em pesquisas.
         </p>
         <div id="fundingList" class="space-y-4">
-          <!-- Carregado dinamicamente -->
         </div>
       </section>
     </div>
@@ -321,7 +310,6 @@
         <p class="text-gray-300 mt-2">Engaje-se com a governança e apoie a ciência aberta.</p>
       </header>
 
-      <!-- Seção: Conectar Wallet -->
       <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <button onclick="connectWalletSupporter()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl">
           🔌 Conectar Carteira
@@ -330,7 +318,6 @@
         <p class="mt-2 text-sm text-gray-300">Compra de $NEURO em breve.</p>
       </section>
 
-      <!-- Seção: Votação de Propostas de Arte -->
       <section class="max-w-4xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">🎨 Votação: Propostas de Arte</h2>
         <div id="artVotingList" class="space-y-4">
@@ -338,7 +325,6 @@
         </div>
       </section>
 
-      <!-- Seção: Votação de Propostas de Pesquisa -->
       <section class="max-w-4xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">🔬 Votação: Propostas de Pesquisa</h2>
         <div id="researchVotingListSupporter" class="space-y-4">
@@ -346,7 +332,6 @@
         </div>
       </section>
 
-      <!-- Seção: Envio de Sugestões -->
       <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">💡 Sugerir Nova Pauta</h2>
         <form id="suggestionForm" class="space-y-4" onsubmit="submitSuggestion(event)">
@@ -357,7 +342,6 @@
         <p id="suggestionStatus" class="text-sm text-gray-400 mt-2"></p>
       </section>
 
-      <!-- Seção: Transparência -->
       <section class="max-w-4xl mx-auto mt-12 mb-20 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold text-center mb-4">📊 Transparência da DAO</h2>
         <ul class="text-sm text-gray-300 list-disc pl-6 space-y-1">
@@ -386,7 +370,6 @@
             🖼️ <span class="ml-2">Obras Submetidas</span>
           </h2>
           <div id="artworksContainerCuradoria">
-            <!-- Obras serão carregadas aqui via JS -->
           </div>
         </section>
       </main>
@@ -406,7 +389,7 @@
   <script>
     // ============ GLOBAL CONFIG & WEB3 AUTH ============
     const BACKEND_URL = "https://neuroarte-dao.onrender.com";
-    let currentWallet = null; // Global variable to store connected wallet
+    let currentWallet = null;
 
     async function authenticateWithWeb3() {
       try {
@@ -454,7 +437,7 @@
           console.log('🎉 Autenticação bem-sucedida!');
           localStorage.setItem('authToken', verifyData.token);
           localStorage.setItem('userWallet', wallet);
-          currentWallet = wallet; // Set global currentWallet
+          currentWallet = wallet;
           return { token: verifyData.token, wallet: verifyData.wallet };
         } else {
           alert('❌ Falha na autenticação: ' + verifyData.error);
@@ -507,9 +490,8 @@
       });
       document.querySelector(`.nav-link[onclick="showSection('${sectionId}')"]`).classList.add('active');
 
-      // Trigger specific loads when a section becomes active
       if (sectionId === 'artist-section') {
-        renderGallery(artistArtworks); // Re-render gallery on section switch
+        renderGallery(artistArtworks);
       } else if (sectionId === 'scientist-section') {
         loadProposalsScientist();
       } else if (sectionId === 'supporter-section') {
@@ -519,7 +501,7 @@
         checkWalletAccessCuradoria();
         renderArtworksCuradoria();
       }
-      window.scrollTo(0, 0); // Scroll to top when changing section
+      window.scrollTo(0, 0);
     }
 
     let currentLanguage = 'pt';
@@ -751,7 +733,7 @@
         if (result.success) {
           statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a revisão comunitária.`;
           document.getElementById("proposalForm").reset();
-          loadProposalsScientist(); // Recarregar lista
+          loadProposalsScientist();
         } else {
           statusMsg.textContent = `❌ Erro: ${result.error}`;
         }
@@ -989,7 +971,6 @@
 
       statusMsg.textContent = "⏳ Enviando...";
 
-      // Por enquanto, apenas confirma (depois conecta a um endpoint real)
       setTimeout(() => {
         statusMsg.textContent = "✅ Sugestão enviada! Obrigado por contribuir.";
         document.getElementById("suggestionForm").reset();
@@ -1082,7 +1063,7 @@
           renderArtworksCuradoria();
         };
       });
-      checkAccessCuradoria(); // Restringe os botões a wallets autorizadas
+      checkAccessCuradoria();
     }
 
     async function checkWalletAccessCuradoria() {
@@ -1108,7 +1089,6 @@
       const windowHeight = window.innerHeight;
       const docHeight = document.body.scrollHeight;
       
-      // Check if any connect button is hidden (implies connected)
       const isConnected = document.getElementById('connectBtnArtist').style.display === 'none' ||
                           document.getElementById('connectButtonHome').style.display === 'none';
 
@@ -1133,11 +1113,10 @@
 
     // ============ INITIALIZATION ============
     document.addEventListener('DOMContentLoaded', () => {
-      showSection('home-section'); // Default to home section
-      toggleLanguage('pt'); // Default to Portuguese
+      showSection('home-section');
+      toggleLanguage('pt');
 
-      // Initial checks for portals that might need data on load
-      renderGallery(artistArtworks); // Render artist gallery initially
+      renderGallery(artistArtworks);
       checkWalletAccessCuradoria();
       renderArtworksCuradoria();
     });
