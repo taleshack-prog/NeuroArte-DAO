@@ -196,7 +196,7 @@
 
         <section class="mb-12">
           <h3 class="text-lg font-semibold mb-4">✉️ Contact</h3>
-          <form action="mailto:neuroartdao@proton.me" method="post" enctype="text/plain" class="space-y-4">
+          <form action="https://formspree.io/f/xdkpoqdy" method="POST" class="space-y-4">
             <input class="w-full p-2 rounded text-black" type="text" name="name" placeholder="Your name" required />
             <input class="w-full p-2 rounded text-black" type="email" name="email" placeholder="Your email" required />
             <textarea class="w-full p-2 rounded text-black" name="message" placeholder="Message" required></textarea>
@@ -585,10 +585,12 @@
       formData.append('description', descriptionInput.value);
 
       try {
-        const response = await authenticatedFetch(`${BACKEND_URL}/upload`, {
+        const response = await fetch(`${BACKEND_URL}/upload`, {
           method: 'POST',
-          body: formData,
-          headers: { 'Content-Type': undefined } // Let browser set Content-Type for FormData
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
         });
 
         const result = await response.json();
@@ -1085,12 +1087,10 @@
 
     async function checkWalletAccessCuradoria() {
       if (typeof window.ethereum === 'undefined') {
-        // alert("MetaMask não detectado. Instale para acessar.");
-        // showSection('home-section'); // Redirect if no MetaMask
         return;
       }
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' }); // Use eth_accounts to check if already connected
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         if (accounts.length > 0) {
           currentWallet = accounts[0].toLowerCase();
           document.getElementById("walletStatusCuradoria").textContent = `Wallet conectada: ${currentWallet}`;
@@ -1110,10 +1110,7 @@
       
       // Check if any connect button is hidden (implies connected)
       const isConnected = document.getElementById('connectBtnArtist').style.display === 'none' ||
-                          document.getElementById('connectButtonHome').style.display === 'none' ||
-                          document.getElementById('connectWalletScientist').style.display === 'none' ||
-                          document.getElementById('connectWalletSupporter').style.display === 'none' ||
-                          document.getElementById('connectWalletCuradoria').style.display === 'none';
+                          document.getElementById('connectButtonHome').style.display === 'none';
 
       if (isConnected || (scrollY + windowHeight >= docHeight - 100)) {
         footer.style.opacity = 1;
@@ -1141,9 +1138,6 @@
 
       // Initial checks for portals that might need data on load
       renderGallery(artistArtworks); // Render artist gallery initially
-      // No need to call loadProposalsScientist, loadArtProposalsSupporter, etc. here
-      // as they are called when their respective sections are activated.
-      // For curadoria, we need to check access and render
       checkWalletAccessCuradoria();
       renderArtworksCuradoria();
     });
