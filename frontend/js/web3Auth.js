@@ -1,102 +1,379 @@
-// frontend/js/web3Auth.js
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal do Artista – NeuroArte DAO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      padding-bottom: 100px;
+      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+    footer {
+      position: relative;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(28,13,48,0.95) 35%);
+      padding: 12px 0;
+      text-align: center;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 1.25s ease-in-out;
+    }
+  </style>
+</head>
+<body class="text-white">
+  <header class="text-center mt-10">
+    <h1 class="text-4xl font-bold">🌈 Portal do Artista</h1>
+    <p class="text-gray-300 mt-2">Submeta sua arte e contribua com a galeria da NeuroArte DAO.</p>
+    <div class="mt-4">
+      <button id="connectBtn" onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded-xl">✨ Conectar Wallet</button>
+    </div>
+    <p id="walletStatus" class="text-sm text-gray-300 mt-1"></p>
+  </header>
 
-const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+  <section class="max-w-3xl mx-auto mt-12 bg-gray-900 bg-opacity-70 p-6 rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">🎓 Submeter Obra para Mintagem</h2>
+    <form id="uploadForm" class="space-y-4" enctype="multipart/form-data" onsubmit="submitArt(event)">
+      <input type="text" id="titleInput" placeholder="Título da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
 
-async function authenticateWithWeb3() {
-  try {
-    if (!window.ethereum) {
-      alert('⚠️ Instale MetaMask para continuar');
-      return null;
+      <textarea id="descriptionInput" placeholder="Descrição da Obra" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required></textarea>
+
+      <input type="file" id="artFile" name="artwork" accept="image/jpeg" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+
+      <button type="button" onclick="uploadArt()" class="bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl">🗕️ Enviar Arte</button>
+
+      <input type="text" id="ipfsLink" placeholder="Link IPFS gerado" class="w-full p-2 mt-2 rounded bg-gray-800 text-white border border-purple-700" readonly required>
+
+      <input type="number" id="editionsInput" placeholder="Número de Cópias (Edições)" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" min="1" required>
+
+      <input type="text" placeholder="Wallet do Artista (0x...)" id="walletInput" class="w-full p-2 rounded bg-gray-800 text-white border border-purple-700" required>
+
+      <button type="submit" id="submitButton" class="w-full bg-purple-700 hover:bg-purple-800 px-4 py-2 rounded-xl" disabled>Enviar para Curadoria da DAO</button>
+    </form>
+
+    <p id="submitStatus" class="text-sm text-gray-400 mt-2"></p>
+    <p class="text-sm text-gray-400 mt-2">Após aprovação, a DAO cuidará da mintagem com split automático (70% artista, 20% DAO, 10% pesquisa).</p>
+  </section>
+
+  <section class="max-w-4xl mx-auto mt-12 px-4">
+    <h2 class="text-xl font-semibold text-center mb-2">🎨 Galeria NeuroArte DAO</h2>
+    <p class="text-center text-sm text-gray-400 mb-6">Obras mintadas por artistas da DAO e listadas na <a href="https://manifold.xyz" class="text-purple-400 underline">Manifold</a>.</p>
+    <div id="artGallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+  </section>
+
+  <footer id="daoFooter">
+    <a href="index.html" style="display:inline-block; background:#d020b1; color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none;">
+      ← Voltar à Página Inicial
+    </a>
+    <p id="footerText" class="text-gray-400 text-sm mt-2">
+      Feito com 🍩 ✨ ❤️ pela comunidade NeuroArte DAO.
+    </p>
+  </footer>
+
+  <script>
+    // ============ WEB3 AUTH (integrado) ============
+    const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+
+    async function authenticateWithWeb3() {
+      try {
+        if (!window.ethereum) {
+          alert('⚠️ Instale MetaMask para continuar');
+          return null;
+        }
+
+        console.log('🔌 Conectando à carteira...');
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+        const wallet = accounts[0];
+        console.log('✅ Carteira conectada:', wallet);
+
+        console.log('🔐 Solicitando desafio...');
+        const challengeResponse = await fetch(`${BACKEND_URL}/api/auth/challenge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wallet })
+        });
+
+        const { message, timestamp } = await challengeResponse.json();
+        console.log('📝 Desafio recebido:', message);
+
+        console.log('✍️ Pedindo assinatura...');
+        const signature = await window.ethereum.request({
+          method: 'personal_sign',
+          params: [message, wallet]
+        });
+        console.log('✅ Mensagem assinada');
+
+        console.log('🔍 Verificando assinatura no backend...');
+        const verifyResponse = await fetch(`${BACKEND_URL}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            wallet,
+            message,
+            signature
+          })
+        });
+
+        const verifyData = await verifyResponse.json();
+
+        if (verifyData.success) {
+          console.log('🎉 Autenticação bem-sucedida!');
+          
+          localStorage.setItem('authToken', verifyData.token);
+          localStorage.setItem('userWallet', wallet);
+
+          return {
+            token: verifyData.token,
+            wallet: verifyData.wallet
+          };
+        } else {
+          alert('❌ Falha na autenticação: ' + verifyData.error);
+          return null;
+        }
+
+      } catch (error) {
+        console.error('❌ Erro:', error);
+        alert('Erro ao autenticar. Verifique o console.');
+        return null;
+      }
     }
 
-    console.log('🔌 Conectando à carteira...');
-    const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts'
-    });
-    const wallet = accounts[0];
-    console.log('✅ Carteira conectada:', wallet);
+    function getAuthToken() {
+      return localStorage.getItem('authToken');
+    }
 
-    console.log('🔐 Solicitando desafio...');
-    const challengeResponse = await fetch(`${BACKEND_URL}/api/auth/challenge`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wallet })
-    });
+    function getUserWallet() {
+      return localStorage.getItem('userWallet');
+    }
 
-    const { message, timestamp } = await challengeResponse.json();
-    console.log('📝 Desafio recebido:', message);
+    function logout() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userWallet');
+      console.log('✅ Desconectado');
+    }
 
-    console.log('✍️ Pedindo assinatura...');
-    const signature = await window.ethereum.request({
-      method: 'personal_sign',
-      params: [message, wallet]
-    });
-    console.log('✅ Mensagem assinada');
+    async function authenticatedFetch(url, options = {}) {
+      const token = getAuthToken();
 
-    console.log('🔍 Verificando assinatura no backend...');
-    const verifyResponse = await fetch(`${BACKEND_URL}/api/auth/verify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        wallet,
-        message,
-        signature
-      })
-    });
-
-    const verifyData = await verifyResponse.json();
-
-    if (verifyData.success) {
-      console.log('🎉 Autenticação bem-sucedida!');
-      
-      localStorage.setItem('authToken', verifyData.token);
-      localStorage.setItem('userWallet', wallet);
-
-      return {
-        token: verifyData.token,
-        wallet: verifyData.wallet
+      const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers
       };
-    } else {
-      alert('❌ Falha na autenticação: ' + verifyData.error);
-      return null;
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return fetch(url, {
+        ...options,
+        headers
+      });
     }
 
-  } catch (error) {
-    console.error('❌ Erro:', error);
-    alert('Erro ao autenticar. Verifique o console.');
-    return null;
-  }
-}
+    // ============ PORTAL DO ARTISTA ============
 
-function getAuthToken() {
-  return localStorage.getItem('authToken');
-}
+    async function connectWallet() {
+      const auth = await authenticateWithWeb3();
+      
+      if (auth) {
+        document.getElementById("walletStatus").textContent = `✅ Autenticado: ${auth.wallet}`;
+        document.getElementById("walletInput").value = auth.wallet;
+        document.getElementById("submitButton").disabled = false;
+        
+        const connectBtn = document.getElementById("connectBtn");
+        if (connectBtn) {
+          connectBtn.style.display = 'none';
+        }
+        
+        const footer = document.getElementById("daoFooter");
+        if (footer) {
+          footer.style.opacity = '1';
+        }
+      } else {
+        document.getElementById("walletStatus").textContent = `❌ Falha na autenticação`;
+      }
+    }
 
-function getUserWallet() {
-  return localStorage.getItem('userWallet');
-}
+    async function uploadArt() {
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado para fazer upload. Clique em "Conectar Wallet"');
+        return;
+      }
 
-function logout() {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('userWallet');
-  console.log('✅ Desconectado');
-}
+      const fileInput = document.getElementById('artFile');
+      const titleInput = document.getElementById('titleInput');
+      const descriptionInput = document.getElementById('descriptionInput');
+      const ipfsInput = document.getElementById('ipfsLink');
 
-async function authenticatedFetch(url, options = {}) {
-  const token = getAuthToken();
+      if (!fileInput.files.length) {
+        alert('❌ Escolha um arquivo JPEG primeiro!');
+        return;
+      }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    ...options.headers
-  };
+      if (!titleInput.value.trim()) {
+        alert('❌ Preencha o título da obra');
+        return;
+      }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+      if (!descriptionInput.value.trim()) {
+        alert('❌ Preencha a descrição da obra');
+        return;
+      }
 
-  return fetch(url, {
-    ...options,
-    headers
-  });
-}
+      const formData = new FormData();
+      formData.append('artwork', fileInput.files[0]);
+      formData.append('title', titleInput.value);
+      formData.append('description', descriptionInput.value);
 
+      try {
+        const response = await authenticatedFetch(`${BACKEND_URL}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        console.log("Resposta do servidor:", result);
+
+        if (result && result.url && result.cid) {
+          ipfsInput.value = result.url;
+          alert('✅ Imagem enviada com sucesso! Link IPFS gerado.');
+        } else {
+          throw new Error('Resposta inesperada do servidor: ' + JSON.stringify(result));
+        }
+      } catch (error) {
+        console.error('Erro no upload:', error);
+        alert('❌ Falha ao enviar a imagem pro IPFS.');
+      }
+    }
+
+    async function submitArt(event) {
+      event.preventDefault();
+
+      const token = getAuthToken();
+      if (!token) {
+        alert('❌ Você precisa estar autenticado. Clique em "Conectar Wallet"');
+        return;
+      }
+
+      const title = document.getElementById('titleInput').value;
+      const description = document.getElementById('descriptionInput').value;
+      const ipfsLink = document.getElementById('ipfsLink').value;
+      const artistWallet = document.getElementById('walletInput').value;
+      const editions = document.getElementById('editionsInput').value;
+      const statusMsg = document.getElementById('submitStatus');
+
+      if (!ipfsLink.trim()) {
+        alert('❌ Você precisa fazer upload da arte primeiro (clique em "🗕️ Enviar Arte")');
+        return;
+      }
+
+      if (!title.trim() || !description.trim() || !artistWallet.trim() || !editions) {
+        alert('❌ Preencha todos os campos obrigatórios');
+        return;
+      }
+
+      statusMsg.textContent = '⏳ Enviando proposta...';
+
+      try {
+        const ipfsHash = ipfsLink.includes('/ipfs/') ? ipfsLink.split('/ipfs/')[1] : ipfsLink;
+
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/art/submit`, {
+          method: 'POST',
+          body: JSON.stringify({
+            title,
+            description,
+            ipfsHash,
+            artistWallet,
+            editions: parseInt(editions)
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          statusMsg.textContent = `✅ Sucesso! Proposta ID: ${result.proposalId}. Aguarde a curadoria.`;
+          document.getElementById('uploadForm').reset();
+          document.getElementById('ipfsLink').value = '';
+          document.getElementById('submitButton').disabled = true;
+        } else {
+          statusMsg.textContent = `❌ Erro: ${result.error}`;
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        statusMsg.textContent = '❌ Erro ao enviar proposta. Verifique a conexão.';
+      }
+    }
+
+    const artworks = [
+      {
+        title: "Neuroesfera I",
+        artist: "Tales Hack",
+        image: "https://ipfs.io/ipfs/bafybeiexample1",
+        link: "https://manifold.xyz/c/0x1234",
+        price: "0.12 ETH"
+      },
+      {
+        title: "Fluxo Divergente",
+        artist: "Maya Costa",
+        image: "https://ipfs.io/ipfs/bafybeiexample2",
+        link: "https://manifold.xyz/c/0x5678",
+        price: "0.20 ETH"
+      }
+    ];
+
+    function renderGallery(data) {
+      const gallery = document.getElementById("artGallery");
+      gallery.innerHTML = "";
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-800 rounded-xl p-4 border border-purple-700 shadow";
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" class="w-full h-40 object-cover rounded" />
+          <h3 class="mt-2 text-lg font-bold">${item.title}</h3>
+          <p class="text-sm">🔍 ${item.artist}</p>
+          <p class="text-sm">💰 ${item.price}</p>
+          <a class="text-sm text-purple-400 underline" href="${item.link}" target="_blank">Ver na Manifold</a>
+        `;
+        gallery.appendChild(card);
+      });
+    }
+
+    renderGallery(artworks);
+
+    window.addEventListener('scroll', () => {
+      const footer = document.getElementById('daoFooter');
+      const scrollY = window.scrollY;
+      const codeHeight = document.body.scrollHeight;
+      const windowH = window.innerHeight;
+      
+      const isConnected = document.getElementById('connectBtn').style.display === 'none';
+      
+      if (isConnected) {
+        footer.style.opacity = 1;
+      } else if ((scrollY + windowH) >= codeHeight - 100) {
+        footer.style.opacity = 1;
+      } else {
+        footer.style.opacity = 0;
+      }
+    });
+
+    const messages = [
+      "Feito com 🍩 ❤️ pela comunidade NeuroArte DAO.",
+      "Governança ética, transparente e descentralizada.",
+      "Onde arte e neurodiversidade encontram a pesquisa.",
+      "DAO: ética, arte e ciência em rede viva."
+    ];
+    let index = 0;
+    setInterval(() => {
+      index = (index + 1) % messages.length;
+      document.getElementById("footerText").textContent = messages[index];
+    }, 6000);
+  </script>
+</body>
+</html>
