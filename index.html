@@ -498,8 +498,7 @@
         loadArtProposalsSupporter();
         loadResearchProposalsSupporter();
       } else if (sectionId === 'curadoria-section') {
-        checkWalletAccessCuradoria();
-        renderArtworksCuradoria();
+        connectWalletCuradoria();
       }
       window.scrollTo(0, 0);
     }
@@ -977,108 +976,225 @@
       }, 1000);
     }
 
-    // ============ CURADORIA PORTAL LOGIC ============
-    const allowedCurators = [
-      "0xE9eFC721405e1026B1ee91C07B2534e1796632A4",
-      "0x59a42f0b0a6c5e0ab24c09fa4101d2df85d3e391"
-    ].map(w => w.toLowerCase());
+    // ============ CURADORIA PORTAL LOGIC (INTEGRADO COM BACKEND) ============
+
+    let userVoteCount = 0;
 
     async function connectWalletCuradoria() {
       const auth = await authenticateWithWeb3();
       if (auth) {
-        document.getElementById("walletStatusCuradoria").textContent = `Wallet conectada: ${auth.wallet}`;
-        checkAccessCuradoria();
+        currentWallet = auth.wallet;
+        console.log('✅ Carteira conectada para curadoria:', auth.wallet);
+        
+        // Verificar se é curador
+        await verifyCuratorStatus();
       } else {
         document.getElementById("walletStatusCuradoria").textContent = "Conexão recusada.";
       }
     }
 
-    function checkAccessCuradoria() {
-      const approveButtons = document.querySelectorAll("#curadoria-section .approve-btn");
-      if (currentWallet && allowedCurators.includes(currentWallet.toLowerCase())) {
-        approveButtons.forEach(btn => btn.disabled = false);
-      } else {
-        approveButtons.forEach(btn => {
-          btn.disabled = true;
-          btn.title = "Apenas a wallet oficial da curadoria pode aprovar.";
+    async function verifyCuratorStatus() {
+      try {
+        const token = getAuthToken();
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/curators/whoami`, {
+          method: 'GET'
         });
+
+        const data = await response.json();
+
+        if (data.isCurator) {
+          console.log('✅ Usuário é curador!');
+          document.getElementById("walletStatusCuradoria").textContent = `✅ Curador Verificado: ${currentWallet}`;
+          
+          // Carregar propostas do backend
+          await loadCuratorProposals();
+        } else {
+          console.log('❌ Usuário NÃO é curador');
+          document.getElementById("walletStatusCuradoria").textContent = `❌ Acesso Negado: Você não é um curador autorizado`;
+          document.getElementById("artworksContainerCuradoria").innerHTML = `
+            <div class="bg-red-900 bg-opacity-30 border border-red-700 p-4 rounded-lg text-red-400">
+              ⛔ Acesso Restrito à Curadoria. Apenas curadores autorizados podem acessar.
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('❌ Erro ao verificar status de curador:', error);
+        document.getElementById("walletStatusCuradoria").textContent = `❌ Erro ao verificar permissões`;
       }
     }
 
-    const submittedArtworksCuradoria = [
-      {
-        title: "Neuroesfera I",
-        editions: 25,
-        artistWallet: "0x123...abc",
-        votes: { yes: 2, no: 1 },
-      },
-      {
-        title: "Cérebro Cósmico",
-        editions: 10,
-        artistWallet: "0x456...def",
-        votes: { yes: 0, no: 0 },
-      },
-    ];
+    async function loadCuratorProposals() {
+      try {
+        console.log('📋 Carregando propostas pendentes...');
+        const response = await fetch(`${BACKEND_URL}/api/curate/pending`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
 
-    function renderArtworksCuradoria() {
+        const data = await response.json();
+        console.log('✅ Propostas carregadas:', data);
+
+        if (data.success && data.pendingProposals.length > 0) {
+          renderCuratorProposals(data.pendingProposals, data.curatorInfo);
+        } else {
+          document.getElementById("artworksContainerCuradoria").innerHTML = `
+            <div class="bg-gray-800 p-6 rounded-lg text-center border border-gray-700">
+              <p class="text-gray-400">✨ Nenhuma proposta pendente de curadoria no momento</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar propostas:', error);
+        document.getElementById("artworksContainerCuradoria").innerHTML = `
+          <div class="bg-red-900 bg-opacity-30 border border-red-700 p-4 rounded-lg text-red-400">
+            ❌ Erro ao carregar propostas. Verifique a conexão.
+          </div>
+        `;
+      }
+    }
+
+    function renderCuratorProposals(proposals, curatorInfo) {
       const container = document.getElementById("artworksContainerCuradoria");
       container.innerHTML = "";
 
-      submittedArtworksCuradoria.forEach((artwork, index) => {
+      // Adicionar info de quorum
+      const quorumDiv = document.createElement("div");
+      quorumDiv.className = "bg-purple-900 bg-opacity-50 border border-purple-700 p-4 rounded-lg mb-6";
+      quorumDiv.innerHTML = `
+        <p class="text-sm text-gray-300">
+          <strong>👥 Curadores Ativos:</strong> ${curatorInfo.totalCurators} | 
+          <strong>📊 Quorum Necessário (50%+1):</strong> ${curatorInfo.quorumNeeded}
+        </p>
+      `;
+      container.appendChild(quorumDiv);
+
+      // Renderizar propostas
+      proposals.forEach(proposal => {
         const card = document.createElement("div");
-        card.className = "bg-gray-800 p-4 rounded-lg border border-purple-600 mb-4";
+        card.className = "bg-gray-900 bg-opacity-70 p-6 rounded-lg border border-purple-700 mb-4";
+
+        const totalVotes = (proposal.votes?.approve || 0) + (proposal.votes?.reject || 0);
+        const percentApprove = totalVotes > 0 ? Math.round((proposal.votes.approve / totalVotes) * 100) : 0;
+
+        const statusBadge = proposal.status === 'approved_by_curators' 
+          ? '<span class="bg-green-900 bg-opacity-50 text-green-400 px-2 py-1 rounded text-xs">✅ Aprovada</span>'
+          : proposal.status === 'rejected_by_curators'
+          ? '<span class="bg-red-900 bg-opacity-50 text-red-400 px-2 py-1 rounded text-xs">❌ Rejeitada</span>'
+          : '<span class="bg-yellow-900 bg-opacity-50 text-yellow-400 px-2 py-1 rounded text-xs">⏳ Votando</span>';
 
         card.innerHTML = `
-          <p class="text-lg font-semibold">${artwork.title}</p>
-          <p class="text-sm text-gray-400">Edições: ${artwork.editions} | Wallet: ${artwork.artistWallet}</p>
-          <div class="flex justify-between mt-2">
+          <div class="flex justify-between items-start mb-3">
             <div>
-              <span class="text-green-400">✔️ ${artwork.votes.yes}</span>
-              <span class="text-red-400 ml-4">❌ ${artwork.votes.no}</span>
+              <h3 class="text-lg font-bold">${proposal.title}</h3>
+              <p class="text-gray-400 text-sm">#${proposal.type === 'art' ? 'ART' : 'RSH'}-${proposal.id}</p>
+            </div>
+            ${statusBadge}
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-3 text-sm">
+            <div>
+              <p class="text-gray-400">Tipo</p>
+              <p>${proposal.type === 'art' ? '🎨 Arte' : '🔬 Pesquisa'}</p>
             </div>
             <div>
-              <button class="approve-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded mr-2" data-index="${index}">Aprovar</button>
-              <button class="reject-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded" data-index="${index}">Rejeitar</button>
+              <p class="text-gray-400">Submetido em</p>
+              <p>${new Date(proposal.submittedAt).toLocaleDateString('pt-BR')}</p>
             </div>
           </div>
+
+          ${proposal.description ? `
+            <div class="mb-3 p-3 bg-gray-800 rounded border border-gray-700 text-sm">
+              <p class="text-gray-300">${proposal.description}</p>
+            </div>
+          ` : ''}
+
+          ${proposal.abstract ? `
+            <div class="mb-3 p-3 bg-gray-800 rounded border border-gray-700 text-sm">
+              <p class="text-gray-300">${proposal.abstract}</p>
+            </div>
+          ` : ''}
+
+          <!-- PROGRESSO DE VOTAÇÃO -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-400">Progresso de Curadoria</span>
+              <span class="text-sm font-semibold">
+                <span class="text-green-400">👍 ${proposal.votes?.approve || 0}</span>
+                <span class="text-gray-500 mx-2">|</span>
+                <span class="text-red-400">👎 ${proposal.votes?.reject || 0}</span>
+              </span>
+            </div>
+            <div class="bg-gradient-to-r from-green-900 via-gray-700 to-red-900 h-2 rounded overflow-hidden">
+              <div class="bg-blue-500 h-full" style="width: ${percentApprove}%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">${totalVotes} votos de ${curatorInfo.totalCurators} curadores</p>
+          </div>
+
+          <!-- BOTÕES DE VOTAÇÃO -->
+          ${['pending_curation', 'pending_review'].includes(proposal.status) ? `
+            <div class="flex gap-3 mt-6">
+              <button onclick="voteCuratorProposal(${proposal.id}, '${proposal.type}', 'approve')" 
+                class="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg font-semibold transition">
+                ✅ Aprovar
+              </button>
+              <button onclick="voteCuratorProposal(${proposal.id}, '${proposal.type}', 'reject')" 
+                class="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg font-semibold transition">
+                ❌ Rejeitar
+              </button>
+            </div>
+          ` : `
+            <div class="mt-4 p-2 bg-gray-800 rounded text-center text-sm text-gray-400">
+              Votação concluída
+            </div>
+          `}
         `;
         container.appendChild(card);
       });
-      attachVoteHandlersCuradoria();
     }
 
-    function attachVoteHandlersCuradoria() {
-      document.querySelectorAll("#curadoria-section .approve-btn").forEach((btn) => {
-        btn.onclick = () => {
-          const i = btn.dataset.index;
-          submittedArtworksCuradoria[i].votes.yes++;
-          renderArtworksCuradoria();
-        };
-      });
-
-      document.querySelectorAll("#curadoria-section .reject-btn").forEach((btn) => {
-        btn.onclick = () => {
-          const i = btn.dataset.index;
-          submittedArtworksCuradoria[i].votes.no++;
-          renderArtworksCuradoria();
-        };
-      });
-      checkAccessCuradoria();
-    }
-
-    async function checkWalletAccessCuradoria() {
-      if (typeof window.ethereum === 'undefined') {
-        return;
-      }
+    async function voteCuratorProposal(proposalId, proposalType, vote) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          currentWallet = accounts[0].toLowerCase();
-          document.getElementById("walletStatusCuradoria").textContent = `Wallet conectada: ${currentWallet}`;
-          checkAccessCuradoria();
+        const token = getAuthToken();
+        if (!token) {
+          alert('❌ Token expirado. Reconecte sua wallet');
+          return;
         }
-      } catch (err) {
-        console.error("Erro ao verificar wallet para curadoria:", err);
+
+        console.log(`🗳️ Votando em ${proposalType} #${proposalId} - ${vote}`);
+
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/voting/curate`, {
+          method: 'POST',
+          body: JSON.stringify({
+            proposalId: parseInt(proposalId),
+            proposalType: proposalType,
+            vote: vote
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          console.log('✅ Voto registrado com sucesso!');
+          userVoteCount++;
+          
+          // Mostrar mensagem de sucesso
+          const message = vote === 'approve' 
+            ? `✅ Voto registrado: APROVADO` 
+            : `✅ Voto registrado: REJEITADO`;
+          
+          alert(message);
+
+          // Recarregar propostas
+          setTimeout(() => {
+            loadCuratorProposals();
+          }, 1000);
+        } else {
+          console.error('❌ Erro:', result.error);
+          alert(`❌ ${result.error}`);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao votar:', error);
+        alert('❌ Erro ao registrar voto');
       }
     }
 
@@ -1117,8 +1233,6 @@
       toggleLanguage('pt');
 
       renderGallery(artistArtworks);
-      checkWalletAccessCuradoria();
-      renderArtworksCuradoria();
     });
   </script>
 </body>
