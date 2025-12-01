@@ -7,9 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'seu-segredo-super-secreto-123';
 // ============ WHITELIST DE CURADORES ============
 // Em produção, isso viria de um banco de dados
 const curatorWhitelist = new Set([
-  '0x1234567890abcdef1234567890abcdef12345678'.toLowerCase(),
-  '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd'.toLowerCase(),
-  '0xffeeaabbccdd1122334455667788990011223344'.toLowerCase()
+  '0xe9efc721405e1026b1ee91c07b2534e1796632a4'.toLowerCase(),
+  '0x59a42f0b0a6c5e0ab24c09fa4101d2df85d3e391'.toLowerCase()
   // Adicione mais curadores aqui
 ]);
 
