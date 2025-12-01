@@ -24,7 +24,7 @@ app.use(express.json());
 const artProposals = [];
 const researchProposals = [];
 const votes = {}; // Votação pública (compatibilidade)
-const curatorVotes = {}; // ← NOVO: Votação de curadoria
+const curatorVotes = {}; // ← NOVO: Votação de curadoria com prevenção de re-voto
 
 // ==== CONFIG ====
 const port = process.env.PORT || 10000;
@@ -73,7 +73,7 @@ app.post('/api/auth/verify', (req, res) => {
     res.json({
       success: true,
       token: result.token,
-      wallet: result.token.split('.')[1] ? JSON.parse(Buffer.from(result.token.split('.')[1], 'base64')).wallet : wallet,
+      wallet,
       isCurator: isCurator(wallet)
     });
   } else {
@@ -321,7 +321,7 @@ app.get("/api/voting/results/:proposalType/:proposalId", (req, res) => {
   });
 });
 
-// ============ CURADORIA (NOVO - WHITELIST) ============
+// ============ CURADORIA (NOVO - WHITELIST COM PREVENÇÃO DE RE-VOTO) ============
 
 /**
  * POST /api/voting/curate
@@ -374,7 +374,7 @@ app.post("/api/voting/curate", curatorMiddleware, (req, res) => {
       });
     }
 
-    // ============ VALIDAÇÃO 7: Curador ainda não votou ============
+    // ============ VALIDAÇÃO 7: PREVENÇÃO DE RE-VOTO - Curador ainda não votou ============
     const voteKey = `curator_${proposalType}_${proposalId}_${curatorWallet}`;
     
     if (curatorVotes[voteKey]) {
@@ -408,7 +408,7 @@ app.post("/api/voting/curate", curatorMiddleware, (req, res) => {
     const totalCurators = curatorWhitelist.size;
     const approvalsNeeded = Math.ceil(totalCurators * 0.5) + 1; // 50%+1 quorum
 
-    console.log(`✅ Voto registrado: ${proposalType} #${proposalId}`);
+    console.log(`✅ Voto registrado: ${proposalType} #${proposalId} - ${vote} por ${curatorWallet}`);
     console.log(`📊 Votos: Aprovar=${proposal.curatorVotes.approve}, Rejeitar=${proposal.curatorVotes.reject}`);
     console.log(`📈 Quorum: ${totalVotes}/${totalCurators} curadores votaram, ${approvalsNeeded} necessários para decidir`);
 
@@ -521,7 +521,7 @@ app.get("/api/voting/curate/:proposalType/:proposalId", (req, res) => {
 });
 
 /**
- * GET /api/voting/curate/pending
+ * GET /api/curate/pending
  * Listar todas as propostas pendentes de curadoria (view para curadores)
  */
 app.get("/api/curate/pending", (req, res) => {
@@ -595,7 +595,7 @@ app.get("/api/curators/whoami", authMiddleware, (req, res) => {
 
 /**
  * POST /api/curators/add
- * Adicionar novo curador à whitelist (ADMIN ONLY)
+ * Adicionar novo curador à whitelist (ADMIN ONLY - proteja com chave secreta)
  */
 app.post("/api/curators/add", (req, res) => {
   try {
