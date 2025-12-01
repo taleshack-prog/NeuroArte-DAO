@@ -3,170 +3,446 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel de Curadoria - NeuroArte DAO</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script defer>
-    let currentWallet = null;
-    const allowedCurators = [
-  "0xE9eFC721405e1026B1ee91C07B2534e1796632A4",
-   "0x59a42f0b0a6c5e0ab24c09fa4101d2df85d3e391"   
-  // adicione outras wallets aqui
-].map(w => w.toLowerCase());
-
-
-    async function connectWallet() {
-      if (typeof window.ethereum !== "undefined") {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-          currentWallet = accounts[0];
-          document.getElementById("walletStatus").textContent = `Wallet conectada: ${currentWallet}`;
-          checkAccess();
-        } catch (error) {
-          document.getElementById("walletStatus").textContent = "Conexão recusada.";
-        }
-      } else {
-        document.getElementById("walletStatus").textContent = "Instale a MetaMask para conectar.";
-      }
+  <title>Portal do Curador – NeuroArte DAO</title>
+  <script src="js/web3Auth.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at bottom right, #3b0764 0%, #000000 60%);
+      color: white;
+      font-family: 'Inter', sans-serif;
     }
-
-    function checkAccess() {
-      const approveButtons = document.querySelectorAll(".approve-btn");
-       if (currentWallet && allowedCurators.includes(currentWallet.toLowerCase())) {
-        approveButtons.forEach(btn => btn.disabled = false);
-      } else {
-        approveButtons.forEach(btn => {
-          btn.disabled = true;
-          btn.title = "Apenas a wallet oficial da curadoria pode aprovar.";
-        });
-      }
+    
+    .proposal-card {
+      transition: all 0.3s ease;
+      border-left: 4px solid #d020b1;
     }
-  </script>
+    
+    .proposal-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 0 20px rgba(208, 32, 177, 0.3);
+    }
+    
+    .quorum-bar {
+      background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .quorum-fill {
+      background: #0ea5e9;
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+    
+    .vote-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .vote-approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .vote-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .vote-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    
+    .btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-black via-gray-900 to-purple-900 text-white font-sans">
-  <header class="text-center py-4">
-    <h1 class="text-3xl font-bold">🖋️ Painel de Curadoria</h1>
-    <p class="text-sm">Revisão das obras submetidas à NeuroArte DAO</p>
-    <div class="mt-2">
-      <a href="index.html" class="underline text-purple-400">🏠 Início</a>
-      <a href="artist_portal_page.html" class="underline text-purple-400 ml-4">🧑‍🎨 Portal do Artista</a>
-      <a href="curadoria_portal_page.html" class="underline text-purple-400 ml-4">🖋️ Curadoria</a>
+<body class="text-white min-h-screen pb-20">
+  
+  <!-- HEADER -->
+  <header class="text-center mt-10 mb-8">
+    <h1 class="text-4xl font-bold">🖋️ Portal do Curador</h1>
+    <p class="text-gray-300 mt-2">Revise e vote em propostas de arte e pesquisa</p>
+    
+    <div class="mt-6 flex flex-col gap-4 items-center">
+      <button id="connectBtn" onclick="connectCuratorWallet()" class="bg-purple-700 hover:bg-purple-800 px-6 py-2 rounded-xl font-semibold">
+        ✨ Conectar Wallet
+      </button>
+      <p id="walletStatus" class="text-sm text-gray-300"></p>
+      <p id="curatorBadge" class="text-sm hidden">
+        <span class="bg-green-900 bg-opacity-50 px-4 py-1 rounded-full">✅ Curador Verificado</span>
+      </p>
     </div>
-    <div class="mt-4">
-      <button onclick="connectWallet()" class="bg-purple-700 px-4 py-2 rounded">🔌 Conectar Wallet</button>
-      <p id="walletStatus" class="text-sm mt-1 text-gray-300"></p>
+
+    <div class="mt-6 flex justify-center gap-4 text-sm">
+      <a href="index.html" class="text-purple-400 hover:text-purple-300 underline">🏠 Início</a>
+      <a href="artist_portal_page.html" class="text-purple-400 hover:text-purple-300 underline">🎨 Artista</a>
+      <a href="scientist_portal_page.html" class="text-purple-400 hover:text-purple-300 underline">🔬 Cientista</a>
+      <a href="curator_portal_page.html" class="text-purple-400 hover:text-purple-300 underline font-bold">🖋️ Curador</a>
     </div>
   </header>
 
-  <main class="max-w-3xl mx-auto p-4">
-  <section class="bg-gray-900 p-6 rounded-xl shadow-lg">
-    <h2 class="text-xl font-bold mb-4 flex items-center">
-      🖼️ <span class="ml-2">Obras Submetidas</span>
-    </h2>
-    <div id="artworksContainer">
-      <!-- Obras serão carregadas aqui via JS -->
-    </div>
-  </section>
-</main>
+  <!-- MAIN CONTENT -->
+  <main class="max-w-5xl mx-auto px-4">
 
-  <script>
-    const submittedArtworks = [
-  {
-    title: "Neuroesfera I",
-    editions: 25,
-    artistWallet: "0x123...abc",
-    votes: { yes: 2, no: 1 },
-  },
-  {
-    title: "Cérebro Cósmico",
-    editions: 10,
-    artistWallet: "0x456...def",
-    votes: { yes: 0, no: 0 },
-  },
-];
-
-function renderArtworks() {
-  const container = document.getElementById("artworksContainer");
-  container.innerHTML = "";
-
-  submittedArtworks.forEach((artwork, index) => {
-    const card = document.createElement("div");
-    card.className = "bg-gray-800 p-4 rounded-lg border border-purple-600 mb-4";
-
-    card.innerHTML = `
-      <p class="text-lg font-semibold">${artwork.title}</p>
-      <p class="text-sm text-gray-400">Edições: ${artwork.editions} | Wallet: ${artwork.artistWallet}</p>
-      <div class="flex justify-between mt-2">
-        <div>
-          <span class="text-green-400">✔️ ${artwork.votes.yes}</span>
-          <span class="text-red-400 ml-4">❌ ${artwork.votes.no}</span>
+    <!-- ESTATÍSTICAS -->
+    <section id="statsSection" class="hidden mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-gray-900 bg-opacity-70 p-4 rounded-lg border border-purple-700 border-opacity-50">
+          <p class="text-gray-400 text-sm">👥 Curadores Ativos</p>
+          <p id="totalCurators" class="text-2xl font-bold">-</p>
         </div>
-        <div>
-          <button class="approve-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded mr-2" data-index="${index}">Aprovar</button>
-          <button class="reject-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded" data-index="${index}">Rejeitar</button>
+        <div class="bg-gray-900 bg-opacity-70 p-4 rounded-lg border border-purple-700 border-opacity-50">
+          <p class="text-gray-400 text-sm">📊 Quorum Necessário (50%+1)</p>
+          <p id="quorumNeeded" class="text-2xl font-bold">-</p>
+        </div>
+        <div class="bg-gray-900 bg-opacity-70 p-4 rounded-lg border border-purple-700 border-opacity-50">
+          <p class="text-gray-400 text-sm">⏳ Propostas Pendentes</p>
+          <p id="totalPending" class="text-2xl font-bold">-</p>
+        </div>
+        <div class="bg-gray-900 bg-opacity-70 p-4 rounded-lg border border-purple-700 border-opacity-50">
+          <p class="text-gray-400 text-sm">✅ Suas Votações</p>
+          <p id="yourVotes" class="text-2xl font-bold">0</p>
         </div>
       </div>
-    `;
+    </section>
 
-    container.appendChild(card);
-  });
+    <!-- PROPOSTAS PENDENTES -->
+    <section id="proposalsSection" class="hidden">
+      <h2 class="text-2xl font-bold mb-6 flex items-center">
+        📋 Propostas em Curadoria
+      </h2>
 
-  attachVoteHandlers();
-}
+      <div id="proposalsList" class="space-y-6">
+        <!-- Propostas carregadas aqui -->
+      </div>
 
-function attachVoteHandlers() {
-  document.querySelectorAll(".approve-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const i = btn.dataset.index;
-      submittedArtworks[i].votes.yes++;
-      renderArtworks();
-    });
-  });
+      <div id="noProposals" class="text-center py-12 bg-gray-900 bg-opacity-50 rounded-lg border border-gray-700">
+        <p class="text-gray-400">✨ Nenhuma proposta pendente de curadoria</p>
+      </div>
+    </section>
 
-  document.querySelectorAll(".reject-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const i = btn.dataset.index;
-      submittedArtworks[i].votes.no++;
-      renderArtworks();
-    });
-  });
+    <!-- HISTÓRICO DE VOTAÇÕES -->
+    <section id="historySection" class="hidden mt-12">
+      <h2 class="text-2xl font-bold mb-6">📜 Seu Histórico de Votações</h2>
+      <div id="voteHistory" class="space-y-4">
+        <p class="text-gray-400">Suas votações aparecerão aqui</p>
+      </div>
+    </section>
 
-  checkAccess(); // Restringe os botões a wallets autorizadas
-}
+    <!-- MENSAGENS DE STATUS -->
+    <div id="statusMessage" class="hidden fixed top-4 right-4 max-w-sm p-4 rounded-lg border-l-4 animate-pulse">
+    </div>
 
-window.addEventListener("load", () => {
-  checkWalletAccess();
-  renderArtworks();
-});
+  </main>
 
-  // Lista de wallets autorizadas (pode expandir depois)
-  const allowedCurators = [
-    "0xE9eFC721405e1026B1ee91C07B2534e1796632A4".toLowerCase()
-  ];
+  <!-- SCRIPT -->
+  <script>
+    const BACKEND_URL = "https://neuroarte-dao.onrender.com";
+    let currentCuratorWallet = null;
+    let userVoteCount = 0;
+    const voteHistory = {};
 
-  // Verifica se o usuário está conectado e autorizado
-  async function checkWalletAccess() {
-    if (typeof window.ethereum === 'undefined') {
-      alert("MetaMask não detectado. Instale para acessar.");
-      window.location.href = "index.html";
-      return;
-    }
+    // ============ CONEXÃO COM WALLET ============
+    async function connectCuratorWallet() {
+      try {
+        if (!window.ethereum) {
+          showStatus('⚠️ Instale MetaMask para continuar', 'warning');
+          return null;
+        }
 
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const userWallet = accounts[0].toLowerCase();
+        console.log('🔌 Conectando à carteira...');
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+        const wallet = accounts[0];
+        console.log('✅ Carteira conectada:', wallet);
 
-      if (!allowedCurators.includes(userWallet)) {
-        alert("Acesso restrito à curadoria. Wallet não autorizada.");
-        window.location.href = "index.html";
+        // Gerar desafio
+        console.log('🔐 Solicitando desafio...');
+        const challengeResponse = await fetch(`${BACKEND_URL}/api/auth/challenge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wallet })
+        });
+
+        const { message, timestamp } = await challengeResponse.json();
+        console.log('📝 Desafio recebido');
+
+        // Assinar mensagem
+        console.log('✍️ Pedindo assinatura...');
+        const signature = await window.ethereum.request({
+          method: 'personal_sign',
+          params: [message, wallet]
+        });
+        console.log('✅ Mensagem assinada');
+
+        // Verificar assinatura no backend
+        console.log('🔍 Verificando assinatura no backend...');
+        const verifyResponse = await fetch(`${BACKEND_URL}/api/auth/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            wallet,
+            message,
+            signature
+          })
+        });
+
+        const verifyData = await verifyResponse.json();
+
+        if (verifyData.success) {
+          console.log('🎉 Autenticação bem-sucedida!');
+          
+          localStorage.setItem('authToken', verifyData.token);
+          localStorage.setItem('userWallet', wallet);
+          currentCuratorWallet = wallet;
+
+          // Verificar se é curador
+          await verifyCuratorStatus();
+          
+          return {
+            token: verifyData.token,
+            wallet: wallet
+          };
+        } else {
+          showStatus('❌ Falha na autenticação: ' + verifyData.error, 'error');
+          return null;
+        }
+
+      } catch (error) {
+        console.error('❌ Erro:', error);
+        showStatus('❌ Erro ao autenticar', 'error');
+        return null;
       }
-    } catch (err) {
-      alert("Erro ao conectar à wallet.");
-      window.location.href = "index.html";
     }
-  }
 
-  window.addEventListener('load', checkWalletAccess);
-</script>
+    // ============ VERIFICAR STATUS DE CURADOR ============
+    async function verifyCuratorStatus() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const wallet = localStorage.getItem('userWallet');
 
+        const response = await fetch(`${BACKEND_URL}/api/curators/whoami`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.isCurator) {
+          console.log('✅ Usuário é curador!');
+          document.getElementById('connectBtn').style.display = 'none';
+          document.getElementById('walletStatus').textContent = `✅ Conectado: ${wallet}`;
+          document.getElementById('curatorBadge').classList.remove('hidden');
+          
+          // Mostrar seções
+          document.getElementById('statsSection').classList.remove('hidden');
+          document.getElementById('proposalsSection').classList.remove('hidden');
+          document.getElementById('historySection').classList.remove('hidden');
+
+          // Carregar propostas
+          await loadPendingProposals();
+        } else {
+          console.log('❌ Usuário não é curador');
+          showStatus('❌ Acesso negado: você não é um curador autorizado', 'error');
+          document.getElementById('walletStatus').textContent = `❌ Não autorizado`;
+        }
+      } catch (error) {
+        console.error('❌ Erro ao verificar status de curador:', error);
+        showStatus('❌ Erro ao verificar permissões', 'error');
+      }
+    }
+
+    // ============ CARREGAR PROPOSTAS PENDENTES ============
+    async function loadPendingProposals() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/curate/pending`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.pendingProposals.length > 0) {
+          document.getElementById('totalPending').textContent = data.pendingProposals.length;
+          document.getElementById('totalCurators').textContent = data.curatorInfo.totalCurators;
+          document.getElementById('quorumNeeded').textContent = data.curatorInfo.quorumNeeded;
+
+          renderProposals(data.pendingProposals);
+          document.getElementById('noProposals').classList.add('hidden');
+        } else {
+          document.getElementById('noProposals').classList.remove('hidden');
+          document.getElementById('proposalsList').innerHTML = '';
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar propostas:', error);
+        showStatus('❌ Erro ao carregar propostas', 'error');
+      }
+    }
+
+    // ============ RENDERIZAR PROPOSTAS ============
+    function renderProposals(proposals) {
+      const container = document.getElementById('proposalsList');
+      container.innerHTML = '';
+
+      proposals.forEach(proposal => {
+        const card = document.createElement('div');
+        card.className = 'proposal-card bg-gray-900 bg-opacity-70 p-6 rounded-lg border border-purple-700';
+
+        const totalVotes = (proposal.votes?.approve || 0) + (proposal.votes?.reject || 0);
+        const percentApprove = totalVotes > 0 ? Math.round((proposal.votes.approve / totalVotes) * 100) : 0;
+
+        const statusBadge = proposal.status === 'approved_by_curators' 
+          ? '<span class="vote-badge vote-approved">✅ Aprovada</span>'
+          : proposal.status === 'rejected_by_curators'
+          ? '<span class="vote-badge vote-rejected">❌ Rejeitada</span>'
+          : '<span class="vote-badge vote-pending">⏳ Votando</span>';
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-xl font-bold">${proposal.title}</h3>
+              <p class="text-gray-400 text-sm mt-1">#${proposal.type === 'art' ? 'ART' : 'RSH'}-${proposal.id}</p>
+            </div>
+            ${statusBadge}
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+            <div>
+              <p class="text-gray-400">Tipo</p>
+              <p class="font-semibold">${proposal.type === 'art' ? '🎨 Arte' : '🔬 Pesquisa'}</p>
+            </div>
+            <div>
+              <p class="text-gray-400">Submetido em</p>
+              <p class="font-semibold text-xs">${new Date(proposal.submittedAt).toLocaleDateString('pt-BR')}</p>
+            </div>
+          </div>
+
+          ${proposal.description ? `
+            <div class="mb-4 p-3 bg-gray-800 rounded border border-gray-700">
+              <p class="text-gray-300 text-sm">${proposal.description}</p>
+            </div>
+          ` : ''}
+
+          ${proposal.abstract ? `
+            <div class="mb-4 p-3 bg-gray-800 rounded border border-gray-700">
+              <p class="text-gray-300 text-sm">${proposal.abstract}</p>
+            </div>
+          ` : ''}
+
+          <!-- PROGRESSO DE VOTAÇÃO -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-400">Progresso de Curadoria</span>
+              <span class="text-sm font-semibold">
+                <span class="text-green-400">👍 ${proposal.votes?.approve || 0}</span>
+                <span class="text-gray-500 mx-2">|</span>
+                <span class="text-red-400">👎 ${proposal.votes?.reject || 0}</span>
+              </span>
+            </div>
+            <div class="quorum-bar">
+              <div class="quorum-fill" style="width: ${percentApprove}%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">${totalVotes} votos de curadoria registrados</p>
+          </div>
+
+          <!-- BOTÕES DE VOTAÇÃO -->
+          <div class="flex gap-3 mt-6">
+            <button onclick="voteProposal(${proposal.id}, '${proposal.type}', 'approve')" 
+              class="flex-1 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg font-semibold transition">
+              ✅ Aprovar
+            </button>
+            <button onclick="voteProposal(${proposal.id}, '${proposal.type}', 'reject')" 
+              class="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-lg font-semibold transition">
+              ❌ Rejeitar
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // ============ VOTAR EM PROPOSTA ============
+    async function voteProposal(proposalId, proposalType, vote) {
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          showStatus('❌ Token expirado. Reconecte sua wallet', 'error');
+          return;
+        }
+
+        showStatus('⏳ Processando voto...', 'info');
+
+        const response = await fetch(`${BACKEND_URL}/api/voting/curate`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            proposalId: parseInt(proposalId),
+            proposalType: proposalType,
+            vote: vote
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          userVoteCount++;
+          document.getElementById('yourVotes').textContent = userVoteCount;
+
+          // Registrar no histórico
+          voteHistory[`${proposalType}_${proposalId}`] = {
+            vote: vote,
+            timestamp: new Date().toLocaleString('pt-BR')
+          };
+
+          showStatus(`✅ Voto registrado: ${vote === 'approve' ? 'Aprovado' : 'Rejeitado'}`, 'success');
+          
+          // Recarregar propostas
+          setTimeout(() => loadPendingProposals(), 1000);
+        } else {
+          showStatus(`❌ ${result.error}`, 'error');
+        }
+      } catch (error) {
+        console.error('❌ Erro ao votar:', error);
+        showStatus('❌ Erro ao registrar voto', 'error');
+      }
+    }
+
+    // ============ MENSAGEM DE STATUS ============
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.textContent = message;
+      statusDiv.classList.remove('hidden');
+      
+      const colors = {
+        'success': 'border-green-500 bg-green-900 bg-opacity-30 text-green-400',
+        'error': 'border-red-500 bg-red-900 bg-opacity-30 text-red-400',
+        'info': 'border-blue-500 bg-blue-900 bg-opacity-30 text-blue-400',
+        'warning': 'border-yellow-500 bg-yellow-900 bg-opacity-30 text-yellow-400'
+      };
+      
+      statusDiv.className = `fixed top-4 right-4 max-w-sm p-4 rounded-lg animate-pulse ${colors[type]}`;
+      
+      setTimeout(() => {
+        statusDiv.classList.add('hidden');
+      }, 4000);
+    }
+
+    // ============ INICIALIZAÇÃO ============
+    window.addEventListener('load', async () => {
+      const token = localStorage.getItem('authToken');
+      const wallet = localStorage.getItem('userWallet');
+
+      if (token && wallet) {
+        currentCuratorWallet = wallet;
+        await verifyCuratorStatus();
+      }
+    });
+  </script>
 </body>
 </html>
